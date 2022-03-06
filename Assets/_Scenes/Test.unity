@@ -4067,10 +4067,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: AI_Unit
       objectReference: {fileID: 0}
-    - target: {fileID: 3712796108771885180, guid: 96c2572f8b85a3440a89afc8ed041f22, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 4093016487822711494, guid: 96c2572f8b85a3440a89afc8ed041f22, type: 3}
       propertyPath: m_RootOrder
       value: 8
@@ -5101,7 +5097,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!95 &1048848869869403235
 Animator:
   serializedVersion: 3
@@ -5684,6 +5680,10 @@ MonoBehaviour:
   attackDist: 1
   walkingSpeed: 1.5
   runningSpeed: 6
+  punchTime: 0
+  hitBoxTime: 0
+  hitBoxLinger: 0
+  punchDamage: 0
 --- !u!4 &2583204693225636345
 Transform:
   m_ObjectHideFlags: 0

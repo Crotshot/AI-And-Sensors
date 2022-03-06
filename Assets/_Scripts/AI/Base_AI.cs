@@ -22,6 +22,14 @@ public class Base_AI : MonoBehaviour
     AI_Smell ai_Smell;
     AI_Vision ai_Vision;
     #endregion
+
+    #region Melee
+    BoxCollider fistBox;
+    //hitBoxTime is how far into the punch until the hit bopx appears and hitBox Linger is hot long the box stays
+    [SerializeField] float punchTime, hitBoxTime, hitBoxLinger, punchDamage;
+    float punchTimer;
+    bool punching;
+    #endregion
     /// <summary>
     /// Idle -> The unit is standing around doing nothing
     /// Patrolling -> The unit is moving form one point to another
@@ -36,7 +44,7 @@ public class Base_AI : MonoBehaviour
     private enum Combat_Type {Melee, Ranged}
     AI_State ai_State;
     Combat_Type combat_Type;
-    float timer, stunTimer, speedBeforeStun;
+    float timer, stunTimer, speedBeforeStun = -1f;
     int currentPoint;
     bool dead, soundInvest, sightInvest, hitInvest;
     #endregion
@@ -44,6 +52,10 @@ public class Base_AI : MonoBehaviour
     private void Start() {
         combat_Type = weap == null ? Combat_Type.Melee : Combat_Type.Ranged;
         ai_State = AI_State.Idle;
+
+        if(combat_Type == Combat_Type.Melee) {
+            fistBox = GetComponent<BoxCollider>();
+        }
 
         animator = GetComponent<Animator>();
         capsuleCollider = GetComponent<CapsuleCollider>();
@@ -101,6 +113,8 @@ public class Base_AI : MonoBehaviour
                 navMeshAgent.speed = speedBeforeStun;
                 navMeshAgent.isStopped = false;
                 speedBeforeStun = -1;
+                if (punching)
+                    SetToAttacking(); //If the AI was punching when it was stunned reset the punch
             }
             return;
         }
@@ -121,16 +135,16 @@ public class Base_AI : MonoBehaviour
                 Seeking();
                 break;
             case AI_State.Attacking:
-                Debug.Log("");
+                Attacking();
                 break;
             case AI_State.Fleeing:
-                Debug.Log("");
+                Fleeing();
                 break;
             case AI_State.Searching:
-                Debug.Log("");
+                Searching();
                 break;
             case AI_State.Ambushing:
-                Debug.Log("");
+                Ambushing();
                 break;
         }
     }
@@ -172,13 +186,31 @@ public class Base_AI : MonoBehaviour
     }
     protected void Attacking() {
         if (target == null) {
+            Debug.Log("Lost target mid attack");
+            animator.SetBool("Punching", false);
+            animator.SetTrigger("PunchInterupt");
             SetToInvestigating();
             return;
         }
-        if (Helpers.Vector3Distance(transform.position, target.position) > attackDist) {
-            Seeking();
+        if (Helpers.Vector3Distance(transform.position, target.position) > attackDist * 1.1f) {
+            Debug.Log("Too far, getting closer!");
+            animator.SetBool("Punching", false);
+            animator.SetTrigger("PunchInterupt");
+            SetToSeeking(target);
             return;
         }
+
+        punchTimer = punchTimer > 0 ? punchTimer -= Time.deltaTime : 0;
+
+        if (punchTime - punchTimer >= hitBoxTime && punchTime - punchTimer < hitBoxTime + hitBoxLinger)
+            fistBox.enabled = true;
+        else
+            fistBox.enabled = false;
+        if (punchTime - punchTimer >= 1) {
+            SetToAttacking();
+            Debug.Log("Trowing another dig");
+        }
+
         transform.LookAt(target);
     }
     protected void Fleeing() {
@@ -231,9 +263,18 @@ public class Base_AI : MonoBehaviour
     }
 
     protected void SetToAttacking() {
+        ai_State = AI_State.Attacking;
         navMeshAgent.SetDestination(transform.position);
+        if(combat_Type == Combat_Type.Melee) {
+            animator.SetTrigger("Punch");
+        }
+        else {
+            animator.SetTrigger("Shoot");
+        }
+        animator.SetBool("Punching", true);
         animator.SetBool("Walking", false);
-        animator.SetBool("Walking", true);
+        punchTimer = punchTime;
+        
     }
 
     protected void Die() {
@@ -257,14 +298,15 @@ public class Base_AI : MonoBehaviour
     /// </summary>
     /// <param name="visibleObjects"></param>
     protected void ObjectsDetected(List<Transform> visibleObjects) {
-        Debug.Log("Objects detected: " + visibleObjects.Count);
+        //Debug.Log("Objects detected: " + visibleObjects.Count);
         foreach (Transform obj in visibleObjects) {
             if (obj == null)
                 continue;
 
             if (obj.tag.Equals("Player")) {
                 Debug.Log("Seeking Player");
-                SetToSeeking(obj);
+                if(ai_State != AI_State.Attacking)
+                    SetToSeeking(obj);
                 sightInvest = true;
                 return;
             }
@@ -282,6 +324,7 @@ public class Base_AI : MonoBehaviour
                 targetPosition = navMeshAgent.destination;
             }
             else {
+                Debug.DrawRay(damageOrigin, Vector3.up * 10f, Color.red, 10f);
                 targetPosition = damageOrigin;
                 SetToInvestigating();
             }
@@ -311,4 +354,11 @@ public class Base_AI : MonoBehaviour
         }
     }
     #endregion
+
+    //Punch Trigger 
+    private void OnTriggerEnter(Collider other) {
+        if (other.tag.Equals("Player") && other.TryGetComponent(out Health hp)) {
+            hp.HealthChange(-punchDamage);
+        }
+    }
 }

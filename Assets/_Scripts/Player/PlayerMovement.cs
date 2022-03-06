@@ -53,5 +53,8 @@ public class PlayerMovement : MonoBehaviour
                 nM.MakeNoise(runningNoise);
             }
         }
+        else {
+            nM.MakeNoise(3f);
+        }
     }
 }

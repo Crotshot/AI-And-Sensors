@@ -1346,10 +1346,10 @@ NavMeshAgent:
   m_AgentTypeID: 0
   m_Radius: 0.25
   m_Speed: 1.5
-  m_Acceleration: 8
+  m_Acceleration: 99
   avoidancePriority: 50
-  m_AngularSpeed: 120
-  m_StoppingDistance: 0
+  m_AngularSpeed: 360
+  m_StoppingDistance: 2
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
@@ -1370,6 +1370,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   deafness: 0
+  rangeAccuracyMin: 0
+  rangeAccuracyMax: 0
+  inaccuracy: 0
+  range: 0
+  soundObeserved:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &2193433229050917338
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1382,19 +1389,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41cdde5716b9a7245baef3d53301c616, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  patrolPoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  patrolPoints: []
   weap: {fileID: 0}
   aiIdleTime: 1
   aiIdleTimeDeviation: 0.5
-  stunTime: 1.6
+  stunTime: 2
   orderComlpletion: 4
+  attackDist: 1
+  walkingSpeed: 1.5
+  runningSpeed: 6
 --- !u!114 &911057237003031878
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1428,19 +1431,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee81d2951e8c4804780a4d4871a11a06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  range: 16.08
-  verticalStart: 0.1
+  range: 15.88
+  verticalStart: 1.79
   verticalEnd: 8.88
-  degrees: 34
-  eyeHeight: 1.64
+  degrees: 73
+  eyeHeight: 0.84
   visionColor: {r: 0, g: 1, b: 0.16959572, a: 0.41960785}
   scanFrequency: 10
   layers:
     serializedVersion: 2
-    m_Bits: 192
+    m_Bits: 200
   blockers:
     serializedVersion: 2
     m_Bits: 1
+  objectsObserved:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &5531530542212962655
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1453,11 +1459,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a012fbf0c42805d48854addad2ad746f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  anosmiaStrength: 0.1
-  minSmellStrength: 0.2
+  anosmiaStrength: 0
+  minSmellStrength: 0
   maxSmellStrength: 1
-  inAccuracy: 30
-  accuracy: 5
+  inAccuracy: 0
+  accuracy: 0
   investigationTimeMinimum: 15
   invesigationTimeMaximum: 45
   scentDetected:

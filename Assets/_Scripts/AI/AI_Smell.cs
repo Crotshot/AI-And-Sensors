@@ -48,14 +48,14 @@ public class AI_Smell : MonoBehaviour
         StartCoroutine("MemoryLoss");
 
         float deltaAngle = accuracy + (inAccuracy * (1 - percentStrength));//Weaker the smell the more inaccurate
-        breadCrumb.eulerAngles = new Vector3(0, breadCrumb.eulerAngles.y + deltaAngle, 0);//Smelling breadcrumbs alters them
+        breadCrumb.eulerAngles = new Vector3(0, breadCrumb.eulerAngles.y + Random.Range(-deltaAngle, deltaAngle), 0);//Smelling breadcrumbs alters them
 
         sniffDirection = breadCrumb.forward;
         
         scentDetected?.Invoke(sniffDirection);
 
 #if UNITY_EDITOR
-        Debug.Log("New Smell Direction: " + sniffDirection);
+        //Debug.Log("New Smell Direction: " + sniffDirection);
         Debug.DrawRay(transform.position, sniffDirection * 4f, Color.magenta, 10f);
 #endif
     }
@@ -69,5 +69,6 @@ public class AI_Smell : MonoBehaviour
                 break;
         }
         sniffDirection = Vector3.zero;
+        scentDetected?.Invoke(sniffDirection);//When direction is 0,0,0 the smell is lost
     }
 }

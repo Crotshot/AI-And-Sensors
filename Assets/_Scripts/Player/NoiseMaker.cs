@@ -5,29 +5,24 @@ using UnityEngine;
 public class NoiseMaker : MonoBehaviour
 {
     SphereCollider audibleNoise;
-    [SerializeField] float minHearRadius = 1, decayRate = 6f, hangTime = 0.25f;
-    float hangTimer;
+    [SerializeField] float minHearRadius = 0.1f;
+    float radius;
+    bool noiseFrame;
 
     private void Start() {
         audibleNoise = GetComponent<SphereCollider>();    
     }
-    //TEST BOOL DEL LATER
-    public bool NOISE;
-    //
+
     private void FixedUpdate() {
-        //
-        if (NOISE) {
-            NOISE = false;
-            MakeNoise(20 + audibleNoise.radius);
+        if (noiseFrame) {
+            audibleNoise.radius = minHearRadius;
         }
-        //
-        if (hangTimer <= 0) {
-            if (audibleNoise.radius > minHearRadius) {
-                audibleNoise.radius -= decayRate * (audibleNoise.radius/5f) * Time.deltaTime;
-            }
+        else {
+            if (radius < audibleNoise.radius)
+                return;
+            audibleNoise.radius = radius;
         }
-        else
-            hangTimer -= Time.deltaTime;
+        noiseFrame ^= true;
     }
 
     private void OnTriggerEnter(Collider other) {
@@ -37,10 +32,6 @@ public class NoiseMaker : MonoBehaviour
     }
 
     public void MakeNoise(float noiseRadius) {
-        if (noiseRadius < audibleNoise.radius)
-            return;
-
-        audibleNoise.radius = noiseRadius;
-        hangTimer = hangTime;
+        radius = noiseRadius;
     }
 }

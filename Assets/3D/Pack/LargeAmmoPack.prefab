@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 2871326696584779672}
   m_Layer: 7
   m_Name: LargeAmmoPack
-  m_TagString: Health
+  m_TagString: Ammo
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

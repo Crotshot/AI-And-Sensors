@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using Helpers = Crotty.Helpers.StaticHelpers;
 
 [ExecuteInEditMode]
@@ -19,10 +20,14 @@ public class AI_Vision : MonoBehaviour
     Collider[] scannedColliders;
     float scanTimer, scanInterval;
     List<Transform> objectsInSight = new List<Transform>();
+    public UnityEvent<List<Transform>> objectsObserved;
 
     private void Start() {
         scanInterval = 1.0f / scanFrequency;
+        if (objectsObserved == null)
+            objectsObserved = new UnityEvent<List<Transform>>();
     }
+
 #if UNITY_EDITOR
     private void OnValidate() {//When a change is made in the editor 
         visionMesh = CreateVisionMesh();
@@ -48,7 +53,9 @@ public class AI_Vision : MonoBehaviour
                 objectsInSight.Add(obj);
             }
         }
+        objectsObserved?.Invoke(objectsInSight);
     }
+
     /// <summary>
     /// Check to see if an object is within the AI sensors vision
     /// </summary>
@@ -75,8 +82,9 @@ public class AI_Vision : MonoBehaviour
         if (Helpers.Y_Line_Check_Below(bOrigin_Y, bEnd_Y, range, distance, dest.y) || !Helpers.Y_Line_Check_Below(tOrigin_Y, tEnd_Y, range, distance, dest.y)) {
             return false;
         }
-
-        if(Physics.Linecast(origin, dest, blockers)) {
+        Debug.DrawLine(origin, dest + Vector3.up * 0.05f);
+        if(Physics.Linecast(origin, dest + Vector3.up * 0.05f, out RaycastHit hit, blockers, QueryTriggerInteraction.Ignore)) {
+            Debug.Log(hit.collider.name);
             return false;
         }
         testColor = Color.white;
@@ -172,12 +180,16 @@ public class AI_Vision : MonoBehaviour
 
             Gizmos.DrawWireSphere(transform.position + Vector3.up * eyeHeight, range);
             for(int i = 0; i < scannedColliders.Length; ++i) {
-                Gizmos.DrawSphere(scannedColliders[i].transform.position, 0.1f);
+                if (scannedColliders[i] != null) {
+                    Gizmos.DrawSphere(scannedColliders[i].transform.position, 0.1f);
+                }
             }
 
             Gizmos.color = testColor;
             foreach(Transform obj in objectsInSight) {
-                Gizmos.DrawSphere(obj.position, 0.2f);
+                if (obj != null) {
+                    Gizmos.DrawSphere(obj.position, 0.2f);
+                }
             }
         }
     }

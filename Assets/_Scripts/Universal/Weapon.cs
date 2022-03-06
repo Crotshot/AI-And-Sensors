@@ -69,7 +69,7 @@ public class Weapon : MonoBehaviour
                 int currentReserveAfterBullets = currentReserve - (currentMag > 0 ? magSize - currentMag + 1 : magSize);
                 currentMag = (currentMag > 0 ? 1 : 0) + (currentReserveAfterBullets > 0 ? magSize : currentReserve);
                 currentReserve = Mathf.Clamp(currentReserveAfterBullets, 0, reserveSize);
-                Debug.Log("Reloaded==>> Mag: " + currentMag + ",  Reserve: " + currentReserve);
+                //Debug.Log("Reloaded==>> Mag: " + currentMag + ",  Reserve: " + currentReserve);
                 magText.text = currentMag.ToString();
                 reserveText.text = currentReserve.ToString();
             }
@@ -98,7 +98,7 @@ public class Weapon : MonoBehaviour
                 this.hit.Emit(hitParticleCount);
                 //DAMAGE
                 if(hit.collider.TryGetComponent(out Health health)) {
-                    health.HealthChange(-damage);
+                    health.HealthChange(-damage, transform.position);
                 }
             }
             else {

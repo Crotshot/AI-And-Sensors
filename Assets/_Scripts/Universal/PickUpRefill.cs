@@ -12,7 +12,7 @@ public class PickUpRefill : MonoBehaviour{
     [SerializeField] GameObject resourcePrefab;
 
     private void Start() {
-        Instantiate(resourcePrefab, transform);
+        Instantiate(resourcePrefab, transform.position, transform.rotation);
     }
 
     public void PickUpConsumed() {

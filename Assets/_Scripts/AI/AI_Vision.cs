@@ -84,7 +84,7 @@ public class AI_Vision : MonoBehaviour
         }
         Debug.DrawLine(origin, dest + Vector3.up * 0.05f);
         if(Physics.Linecast(origin, dest + Vector3.up * 0.05f, out RaycastHit hit, blockers, QueryTriggerInteraction.Ignore)) {
-            Debug.Log(hit.collider.name);
+            //Debug.Log(hit.collider.name);
             return false;
         }
         testColor = Color.white;

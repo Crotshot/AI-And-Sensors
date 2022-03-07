@@ -46,7 +46,7 @@ public class Button_Base : MonoBehaviour
         return text;
     }
 
-    protected void ButtonEffect() {
+    virtual protected void ButtonEffect() {
         Debug.Log("This button needs to be overridden to do something useful!");
     }
 }

@@ -421,4 +421,8 @@ public class Base_AI : MonoBehaviour
             hp.HealthChange(-mAttackDamage);
         }
     }
+
+    public void AssignConmtrolPoints(Transform[] transforms) {
+        patrolPoints = transforms;
+    }
 }

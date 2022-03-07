@@ -15,6 +15,24 @@ public class Green_AI : Base_AI {
     /// </summary>
     protected List<Transform> ammoPacks, healthPacks;
     [SerializeField] protected LayerMask packLayer;
+    /// <summary>
+    /// What percentage of health the ai must be at in order to seek out a health pack
+    ///     ->Will flee from player to health pack if beneath threshold
+    ///     ->If no health packs are available it will simply just flee instead
+    ///     ->AI keeps track of player through sound, sight, smell & damage, if it can see/hear the player it will run away from the general direction of the player
+    ///     ->When player is not bothering AI it will enter wandering mode until it finds a health pack to heal itself on
+    ///     ->This goes the same for ammo
+    ///     
+    ///     ->If AI has been fleeing from player for longer than its flee timer when it hears the player it will turn to attack for brief moment and then continue fleeing
+    ///     ->If it has not ammmo at all if will not hold its ground ever and keep fleeing/wandering till it finds ammo
+    ///     
+    ///     ->To Calculate FleePoint the ai will use the last known location to the player and check which flee point it is closer to than the player
+    ///     ->After reaching the first flee point if understurbed it will start to wander from fleepoint to fleepoint until it finds enough health/ ammo to resume patrolling
+    /// </summary>
+    [SerializeField][Range(0,1)] float lowHealthThreshold, lowAmmoThreshold;
+    [SerializeField] [Min(0)] float maxFleeTime, maxFleeTimeDeviation, shortFleeTime, shortFleeTimeDeviation;//Max is total fleetime to count towards becoming mroe aggressive and short fleetime is for each individual time it flees
+    float fleeTimer, shortFleeTimer;
+    bool wantsAmmo, wantsHealth;
 
     override protected void Start() {
         base.Start();
@@ -47,7 +65,7 @@ public class Green_AI : Base_AI {
                         else
                             marker = new GameObject("Small_Ammo_Marker");
                         marker.transform.position = pickUp.transform.position;
-                        marker.AddComponent<MarkerOwner>().markerOwner = gameObject.GetInstanceID();
+                        marker.AddComponent<MarkerOwner>().markerOwner = GetInstanceID();
                         Debug.Log("Remembering Ammo Marker");
                         ammoPacks.Add(marker.transform);
                     }
@@ -66,7 +84,7 @@ public class Green_AI : Base_AI {
                         else
                             marker = new GameObject("Small_Health_Marker");
                         marker.transform.position = pickUp.transform.position;
-                        marker.AddComponent<MarkerOwner>().markerOwner = gameObject.GetInstanceID();
+                        marker.AddComponent<MarkerOwner>().markerOwner = GetInstanceID();
                         Debug.Log("Remembering Health Marker");
                         healthPacks.Add(marker.transform);
                     }
@@ -77,6 +95,11 @@ public class Green_AI : Base_AI {
                 if(marker.markerOwner == GetInstanceID()) {
                     bool foundPack = false;
                     foreach (Collider coll in Physics.OverlapSphere(marker.transform.position, 2.5f, packLayer, QueryTriggerInteraction.Collide)) {//Only queries packs so it is very unlikey to detect more than one
+                        if (coll.transform == marker.transform) {
+                            Debug.Log("Marker scanned itself lol");
+                            continue;
+                        }
+                        Debug.Log("NGL kinda sus");
                         foundPack = true;
                         break;
                     }
@@ -93,5 +116,68 @@ public class Green_AI : Base_AI {
             }
         }
         base.ObjectsDetected(visibleObjects); //Base only detects players
+    }
+
+
+
+    protected override void Fleeing() {
+        //Flee timer decreases
+        fleeTimer -= Time.deltaTime;
+        shortFleeTimer -= Time.deltaTime;
+
+        if (shortFleeTimer <= 0) {
+            SetToWandering();
+        }
+        if (fleeTimer <= 0) {
+            //aggression
+        }
+        if (target == null)
+            SetToFleeing();
+    }
+
+    virtual protected void SetToWandering() {
+        //Pick random point nearby and set to AI destination
+    }
+
+    protected override void Wandering() {
+        //if within destination piont make a new one
+        if(Helpers.Vector3Distance(navMeshAgent.destination, transform.position) <= orderComlpletion) {
+            SetToWandering();
+        }
+    }
+
+    virtual protected void SetToFleeing() {
+        if (wantsHealth) {
+            target = Helpers.FindClosestTransform(ammoPacks, transform.position);
+            if(target != null) {
+                navMeshAgent.SetDestination(target.position);
+            }
+        }
+        else if (wantsAmmo) {
+            target = Helpers.FindClosestTransform(healthPacks, transform.position);
+            if (target != null) {
+                navMeshAgent.SetDestination(target.position);
+            }
+        }
+        
+    }
+
+    virtual protected void Spook() { //Spook is called after hearing/seeing the player whenever the AI is below hp/ammo thresh or is fleeing
+
+    }
+
+    protected override void Investigating() {
+        if(health.GetHeatlthPercent() < lowHealthThreshold) {
+            if (fleeTimer <= 0)
+                transform.LookAt(targetPosition);////////////////////////////////////PICK UP HERE
+        }
+        else if(weap != null) {
+            if (weap.GetAmmoPercent() < lowAmmoThreshold) {
+                if(fleeTimer <= 0)
+                    transform.LookAt(targetPosition);
+            }
+        }
+
+        base.Investigating();
     }
 }

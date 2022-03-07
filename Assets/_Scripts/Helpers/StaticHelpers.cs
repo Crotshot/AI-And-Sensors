@@ -55,5 +55,16 @@ namespace Crotty.Helpers {
 
             return false;
         }
+
+
+        public static Transform FindClosestTransform(List<Transform> points, Vector3 position) {
+            Transform trans = points[0];
+            foreach (Transform point in points) {
+                if(Vector3Distance(position, point.position) < Vector3Distance(position, trans.position)) {
+                    trans = point;
+                }
+            }
+            return trans;
+        }
     }
 }

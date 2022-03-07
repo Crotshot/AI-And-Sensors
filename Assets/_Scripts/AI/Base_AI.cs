@@ -425,4 +425,8 @@ public class Base_AI : MonoBehaviour
     public void AssignConmtrolPoints(Transform[] transforms) {
         patrolPoints = transforms;
     }
+
+    public Weapon GetWeapon() {
+        return weap;
+    }
 }

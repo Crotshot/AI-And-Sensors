@@ -24,17 +24,6 @@ public class Health : MonoBehaviour {
         }
     }
 
-    #region Test
-    public bool hurt;
-    private void Update() {
-        if (hurt) {
-            hurt = false;
-            HealthChange(-25f);
-        }
-    }
-    #endregion
-
-
     public void HealthChange(float amount) {
         health = Mathf.Clamp(health + amount, 0, maxHealth);
         if(player)

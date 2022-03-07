@@ -7,8 +7,8 @@ using UnityEngine.SceneManagement;
 
 public class UI : MonoBehaviour
 {
-    [SerializeField] TMP_Text centreText, healthText;
-    [SerializeField] GameObject EscMenu, gameOver;
+    [SerializeField] TMP_Text centreText, healthText, timeText, victoryText;
+    [SerializeField] GameObject EscMenu, gameOver, victory;
     Inputs inputs;
 
     bool menuToggle;
@@ -47,12 +47,25 @@ public class UI : MonoBehaviour
         }
     }
 
+    public void TimeText(string text) {
+        timeText.text = text;
+    }
+
     public void HealthText(float health) {
         healthText.text = health.ToString("F0");
     }
 
     public void GameOver() {
         gameOver.SetActive(true);
+        Cursor.visible ^= true;
+        menuToggle = false;
+        Cursor.lockState = Cursor.lockState == CursorLockMode.Locked ? Cursor.lockState = CursorLockMode.None : Cursor.lockState = CursorLockMode.Locked;
+        Time.timeScale = Time.timeScale == 0 ? Time.timeScale = 1 : Time.timeScale = 0;
+    }
+
+    public void Victory(string time, int keys) {
+        victory.SetActive(true);
+        victoryText.text = "You collected all "+ keys +" keys with " + time + " left to spare!";
         Cursor.visible ^= true;
         menuToggle = false;
         Cursor.lockState = Cursor.lockState == CursorLockMode.Locked ? Cursor.lockState = CursorLockMode.None : Cursor.lockState = CursorLockMode.Locked;

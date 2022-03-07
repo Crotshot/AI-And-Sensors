@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class PickUp : MonoBehaviour
 {
-    public enum PickUpType { Health, Ammo }
-    [SerializeField] private PickUpType pickUpType;
+    public enum PickUpType { Health, Ammo, Key }
+    [SerializeField] public PickUpType pickUpType;
     [SerializeField] float resourceRestored;
 
     public void PickedUp() {
@@ -42,6 +42,26 @@ public class PickUp : MonoBehaviour
                 }
                 Destroy(gameObject);
             }
+        }
+
+        if (pickUpType == PickUpType.Ammo && other.TryGetComponent(out Base_AI ai)) {
+            Weapon weap = ai.GetWeapon();
+            if (weap == null)
+                return;
+            if (weap.GetAmmoPercent() < 1) {
+                weap.AddAmmo((int)resourceRestored);
+                if (transform.parent != null) {
+                    if (transform.parent.TryGetComponent(out PickUpRefill fill)) {
+                        fill.PickUpConsumed();
+                    }
+                }
+                Destroy(gameObject);
+            }
+
+        }
+        if (pickUpType == PickUpType.Key && other.tag.Equals("Player")) {
+            FindObjectOfType<LevelCompletion>().KeyCollected();
+            Destroy(gameObject);
         }
     }
 }

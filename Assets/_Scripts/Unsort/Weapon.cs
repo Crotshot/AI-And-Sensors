@@ -22,7 +22,7 @@ public class Weapon : MonoBehaviour
     Rigidbody rb;
     ParticleSystem hit;
 
-    private void Start() {
+    private void Awake() {
         rb = GetComponent<Rigidbody>();
         currentMag = magSize;
         currentReserve = startingReserve;
@@ -88,6 +88,9 @@ public class Weapon : MonoBehaviour
                 if(hit.collider.TryGetComponent(out Health health)) {
                     health.HealthChange(-damage, transform.position);
                 }
+                //if(hit.collider.TryGetComponent(out Weapon weap)) {
+                //    weap.Shoot(); 
+                //}
             }
             else {
                 //bullet.Emit(1);

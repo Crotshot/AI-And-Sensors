@@ -51,9 +51,6 @@ public class Intertact : MonoBehaviour
                     button.Press();
                 }
            }
-            else {
-                ui.CentreText("", false);
-            }
         }
         else {
             ui.CentreText("", false);

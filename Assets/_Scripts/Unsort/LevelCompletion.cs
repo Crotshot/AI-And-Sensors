@@ -24,13 +24,13 @@ public class LevelCompletion : MonoBehaviour
     {
         levelTime -= Time.deltaTime;
         ui.TimeText(TimeConverter(levelTime));
-        if(levelTime <= 0 && !testing && !over) {
+        if(levelTime <= 0 && !testing) {
             FindObjectOfType<PlayerMovement>().GetComponent<Health>().HealthChange(-999999);
-            over = true;
         }
 
-        if(keysNeeded == keysCollected) {
+        if(keysNeeded == keysCollected && !over) {
             ui.Victory(TimeConverter(levelTime), keysCollected);
+            over = true;
         }
     }
 

@@ -65,6 +65,7 @@ public class Base_AI : MonoBehaviour
             fistBox = GetComponent<BoxCollider>();
         }
         else {
+            weap.transform.parent = null;
             weap.PickUp(weaponPoint, false);
         }
 

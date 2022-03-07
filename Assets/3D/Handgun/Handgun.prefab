@@ -19817,8 +19817,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f46411763f57c5e4eaae4e785f1a5529, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  magSize: 7
-  reserveSize: 60
+  magSize: 10
+  reserveSize: 22
   startingReserve: 22
   hitParticleCount: 15
   fireRate_RPM: 180
@@ -19834,6 +19834,9 @@ MonoBehaviour:
   bullet: {fileID: 4861934676851411766}
   muzzle: {fileID: 4861934676837897369}
   bulletPos: {fileID: 0}
+  layer:
+    serializedVersion: 2
+    m_Bits: 201
 --- !u!95 &5467944753757546009
 Animator:
   serializedVersion: 3

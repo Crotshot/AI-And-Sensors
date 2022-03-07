@@ -40,7 +40,7 @@ public class UI : MonoBehaviour
 
     public void CentreText(string objectName, bool enable) {
         if (enable) {
-            centreText.text = "[Interact] to Pick Up " + objectName;
+            centreText.text = "[Interact] to " + objectName;
         }
         else {
             centreText.text = "";

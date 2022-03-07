@@ -23,10 +23,12 @@ public class Intertact : MonoBehaviour
     private void Update() {
         if (Time.timeScale == 0)
             return;
+
         cameraRay.direction = playerCamera.forward;
         cameraRay.origin = playerCamera.position;
-        if(weapon == null) {
-            if (Physics.Raycast(cameraRay, out RaycastHit hit, reach, ~layer, QueryTriggerInteraction.Ignore)) { //Pick up weapon
+
+        if (Physics.Raycast(cameraRay, out RaycastHit hit, reach, ~layer, QueryTriggerInteraction.Ignore)) { //Pick up weapon
+           if(weapon == null) {
                 if (hit.transform.TryGetComponent(out Weapon weap)) {
                     if (!weap.GetPickUp()) {
                         if (inputs.GetInteractInput() > 0 && weapon == null) {
@@ -35,19 +37,29 @@ public class Intertact : MonoBehaviour
                             ui.CentreText("", false);
                         }
                         else {
-                            ui.CentreText(weap.name, true);
+                            ui.CentreText("pick Up " + weap.name, true);
                         }
                     }
                 }
                 else {
                     ui.CentreText("", false);
                 }
-            }
+           }
+           if(hit.transform.TryGetComponent(out Button_Base button)) {
+                ui.CentreText(button.GetTextString(), true);
+                if (inputs.GetInteractInput() > 0) {
+                    button.Press();
+                }
+           }
             else {
                 ui.CentreText("", false);
             }
         }
         else {
+            ui.CentreText("", false);
+        }
+
+        if (weapon != null){
             if (inputs.GetAction_1_2_Input() > 0) {
                 GetComponentInChildren<NoiseMaker>().MakeNoise(weapon.Shoot());
             }

@@ -323,6 +323,11 @@ public class Base_AI : MonoBehaviour
     }
 
     protected void SetToAttacking_Ranged() {
+        if (weap.GetAmmoPercent() == 0) {
+            animator.SetBool("Shooting", false);
+            SetToIdle();
+            return;
+        }
         ai_State = AI_State.Attacking;
         navMeshAgent.SetDestination(transform.position);
         animator.SetBool("Shooting", true);

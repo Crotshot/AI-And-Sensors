@@ -12,10 +12,11 @@ public class Weapon : MonoBehaviour
     [SerializeField] TMP_Text magText, reserveText;
     [SerializeField] ParticleSystem casing, bullet, muzzle;
     [SerializeField] Transform bulletPos;
+    [SerializeField] LayerMask layer;
     Animator animator;
     Transform hitPoint, fakeParent;
 
-    int currentMag, currentReserve, layer;
+    int currentMag, currentReserve;
     private bool pickUp, canShoot,  reloading, playerHeld, aiHeld;
     private float reloadTimer, shotTimer;
     Rigidbody rb;
@@ -28,11 +29,9 @@ public class Weapon : MonoBehaviour
         animator = GetComponent<Animator>();
         hitPoint = transform.GetChild(2);
         hit = hitPoint.GetComponent<ParticleSystem>();
-        layer = 1 << LayerMask.NameToLayer("Default");
     }
 
     private void Update() {
-
         if (aiHeld && fakeParent != null) {
 //            transform.position = fakeParent.TransformPoint(fakeParent.position);
             transform.position = fakeParent.position;
@@ -172,6 +171,8 @@ public class Weapon : MonoBehaviour
     }
 
     public float GetAmmoPercent() {
+        if (currentReserve == 0)
+            return 0;
         return ((float)currentReserve) / (float) reserveSize;
     }
 

@@ -34,5 +34,8 @@ public class NoiseListener : MonoBehaviour
             Vector3 projectedOrigin = soundOrigin + new Vector3(Random.Range(-totalInaccuracy, +totalInaccuracy),0, Random.Range(-totalInaccuracy, +totalInaccuracy));
             soundObeserved?.Invoke(projectedOrigin);
         }
+        else {
+            Debug.DrawRay(transform.position, Vector3.up, Color.grey, 5f);
+        }
     }
 }

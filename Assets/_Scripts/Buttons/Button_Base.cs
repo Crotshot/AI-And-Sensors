@@ -6,7 +6,7 @@ public class Button_Base : MonoBehaviour
 {
     [SerializeField] bool toggle;
     [SerializeField] [Range(0f, 1f)] float moveTime, moveAmount;
-    [SerializeField] private string text;
+    [SerializeField] private string text = "to spawn";
     private enum Button_State { moving, Up, Down}
     Button_State button_State = Button_State.Up;
 

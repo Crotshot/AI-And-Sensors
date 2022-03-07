@@ -43,7 +43,6 @@ public class PickUp : MonoBehaviour
                 Destroy(gameObject);
             }
         }
-
         if (pickUpType == PickUpType.Ammo && other.TryGetComponent(out Base_AI ai)) {
             Weapon weap = ai.GetWeapon();
             if (weap == null)
@@ -57,8 +56,8 @@ public class PickUp : MonoBehaviour
                 }
                 Destroy(gameObject);
             }
-
         }
+
         if (pickUpType == PickUpType.Key && other.tag.Equals("Player")) {
             FindObjectOfType<LevelCompletion>().KeyCollected();
             Destroy(gameObject);

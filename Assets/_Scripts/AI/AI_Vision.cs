@@ -87,7 +87,9 @@ public class AI_Vision : MonoBehaviour
             //Debug.Log(hit.collider.name);
             return false;
         }
+#if UNITY_EDITOR
         testColor = Color.white;
+#endif
         return true;
     }
 

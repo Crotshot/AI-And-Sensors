@@ -22,13 +22,15 @@ public class LevelCompletion : MonoBehaviour
 
     void Update()
     {
+        if (over)
+            return;
         levelTime -= Time.deltaTime;
         ui.TimeText(TimeConverter(levelTime));
         if(levelTime <= 0 && !testing) {
             FindObjectOfType<PlayerMovement>().GetComponent<Health>().HealthChange(-999999);
         }
 
-        if(keysNeeded == keysCollected && !over) {
+        if(keysNeeded == keysCollected) {
             ui.Victory(TimeConverter(levelTime), keysCollected);
             over = true;
         }

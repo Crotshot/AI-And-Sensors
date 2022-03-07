@@ -6,35 +6,35 @@ using Helpers = Crotty.Helpers.StaticHelpers;
 
 public class Base_AI : MonoBehaviour
 {
-    [SerializeField] Transform[] patrolPoints;
-    [SerializeField] float aiIdleTime, aiIdleTimeDeviation, stunTime, orderComlpletion, walkingSpeed, runningSpeed;
+    [SerializeField] protected Transform[] patrolPoints;
+    [SerializeField] protected float aiIdleTime, aiIdleTimeDeviation, stunTime, orderComlpletion, walkingSpeed, runningSpeed;
     #region Non Serialized
-    Vector3 targetPosition;
-    Transform target;
-    Animator animator;
-    CapsuleCollider capsuleCollider;
-    NavMeshAgent navMeshAgent;
-    Health health;
+    protected Vector3 targetPosition;
+    protected Transform target;
+    protected Animator animator;
+    protected CapsuleCollider capsuleCollider;
+    protected NavMeshAgent navMeshAgent;
+    protected Health health;
 
     #region Sensors
-    NoiseListener noiseListener;
-    AI_Smell ai_Smell;
-    AI_Vision ai_Vision;
+    protected NoiseListener noiseListener;
+    protected AI_Smell ai_Smell;
+    protected AI_Vision ai_Vision;
     #endregion
 
     #region Ranged
-    [SerializeField] Weapon weap;
-    [SerializeField] Transform weaponPoint;
-    [SerializeField] float rAttackTime, rShotTime, rAttackDist;//attackTime is full length of cycle, shotTime is how long into the cycle until it shoots
-    float rAttackTimer;
-    bool shot;
+    [SerializeField] protected Weapon weap;
+    [SerializeField] protected Transform weaponPoint;
+    [SerializeField] protected float rAttackTime, rShotTime, rAttackDist;//attackTime is full length of cycle, shotTime is how long into the cycle until it shoots
+    protected float rAttackTimer;
+    protected bool shot;
     #endregion
 
     #region Melee
-    BoxCollider fistBox;
+    protected BoxCollider fistBox;
     //hitBoxTime is how far into the punch until the hit box appears and hitBox Linger is hot long the box stays, ranged attacks shoot immediately
-    [SerializeField] float mAttackTime, hitBoxTime, hitBoxLinger, mAttackDamage, mAttackDist;
-    float mAttackTimer;
+    [SerializeField] protected float mAttackTime, hitBoxTime, hitBoxLinger, mAttackDamage, mAttackDist;
+    protected float mAttackTimer;
     #endregion
 
 
@@ -48,16 +48,16 @@ public class Base_AI : MonoBehaviour
     /// Fleeing -> The unit is fleeing from combat & seeking ammo or health
     /// Searching -> The unit is seeking ammo and health
     /// </summary>
-    private enum AI_State { Idle, Patrolling, Wandering, Investigating, Seeking, Attacking, Fleeing, Searching, Ambushing}
-    private enum Combat_Type {Melee, Ranged}
-    AI_State ai_State;
-    Combat_Type combat_Type;
-    float timer, stunTimer, speedBeforeStun = -1f;
-    int currentPoint;
-    bool dead, soundInvest, sightInvest, hitInvest;
+    public enum AI_State { Idle, Patrolling, Wandering, Investigating, Seeking, Attacking, Fleeing, Searching, Ambushing}
+    public enum Combat_Type {Melee, Ranged}
+    protected AI_State ai_State;
+    protected Combat_Type combat_Type;
+    protected float timer, stunTimer, speedBeforeStun = -1f;
+    protected int currentPoint;
+    protected bool dead, soundInvest, sightInvest, hitInvest;
     #endregion
 
-    private void Start() {
+    virtual protected void Start() {
         combat_Type = weap == null ? Combat_Type.Melee : Combat_Type.Ranged;
         ai_State = AI_State.Idle;
 
@@ -166,21 +166,21 @@ public class Base_AI : MonoBehaviour
     }
 
     #region Overidables
-    protected void Idle() {
+    virtual protected void Idle() {
         if (timer > 0) {
             timer -= Time.deltaTime;
             return;
         }
         SetToPatrolling();
     }
-    protected void Patrolling() {
+    virtual protected void Patrolling() {
         //Checking distance to next point
         CalculateNextPoint();
     }
-    protected void Wandering() {
+    virtual protected void Wandering() {
 
     }
-    protected void Investigating() {
+    virtual protected void Investigating() {
         if(Helpers.Vector3Distance(transform.position, targetPosition) <= 3f) {
             SetToIdle();
             sightInvest = false;
@@ -188,7 +188,7 @@ public class Base_AI : MonoBehaviour
             hitInvest = false;
         }
     }
-    protected void Seeking() {
+    virtual protected void Seeking() {
         if(target == null) {
             SetToInvestigating();
             return;
@@ -200,7 +200,7 @@ public class Base_AI : MonoBehaviour
             navMeshAgent.SetDestination(target.position);
         }
     }
-    protected void AttackingMelee() {
+    virtual protected void AttackingMelee() {
         if (target == null) {
             //Debug.Log("Lost target mid melee attack");
             animator.SetBool("Punching", false);
@@ -229,7 +229,7 @@ public class Base_AI : MonoBehaviour
         transform.LookAt(target);
     }
 
-    protected void AttackingRanged() {
+    virtual protected void AttackingRanged() {
         if (target == null) {
             Debug.Log("Lost target  while shooting");
             animator.SetBool("Shooting", false);
@@ -257,24 +257,24 @@ public class Base_AI : MonoBehaviour
         transform.LookAt(target);
     }
 
-    protected void Fleeing() {
+    virtual protected void Fleeing() {
 
     }
-    protected void Searching() {
+    virtual protected void Searching() {
 
     }
-    protected void Ambushing() {
+    virtual protected void Ambushing() {
 
     }
 
-    protected void SetToIdle() {
+    virtual protected void SetToIdle() {
         ai_State = AI_State.Idle;
         timer = aiIdleTime + Random.Range(-aiIdleTimeDeviation, aiIdleTimeDeviation);
         navMeshAgent.SetDestination(transform.position);
         animator.SetBool("Walking", false);
         animator.SetBool("Running", false);
     }
-    protected void SetToPatrolling() {
+    virtual protected void SetToPatrolling() {
         if (patrolPoints.Length == 0) {
             SetToIdle();
             return;
@@ -286,27 +286,27 @@ public class Base_AI : MonoBehaviour
         animator.SetBool("Running", false);
         navMeshAgent.speed = walkingSpeed;
     }
-    protected void CalculateNextPoint() {//Checks distance to current control point and sets next if close enough
+    virtual protected void CalculateNextPoint() {//Checks distance to current control point and sets next if close enough
         if (Helpers.Vector3Distance(transform.position, patrolPoints[currentPoint].position) <= orderComlpletion) {
             currentPoint = (currentPoint == patrolPoints.Length - 1) ? 0 : currentPoint+1;
             navMeshAgent.SetDestination(patrolPoints[currentPoint].position);
         }
     }
-    protected void SetToSeeking(Transform targ) {
+    virtual protected void SetToSeeking(Transform targ) {
         ai_State = AI_State.Seeking;
         target = targ;
         navMeshAgent.SetDestination(targ.position);
         animator.SetBool("Running", true);
         navMeshAgent.speed = runningSpeed;
     }
-    protected void SetToInvestigating() {
+    virtual protected void SetToInvestigating() {
         ai_State = AI_State.Investigating;
         navMeshAgent.SetDestination(targetPosition);
         animator.SetBool("Running", true);
         navMeshAgent.speed = runningSpeed;
     }
 
-    protected void SetToAttacking() {
+    virtual protected void SetToAttacking() {
         if (combat_Type == Combat_Type.Ranged) {
             SetToAttacking_Ranged();
         }
@@ -315,7 +315,7 @@ public class Base_AI : MonoBehaviour
         }
     }
     //Duplicate code between melee and ranged as they are called directly instead of SetToAttacking in some locals
-    protected void SetToAttacking_Melee() {
+    virtual protected void SetToAttacking_Melee() {
         ai_State = AI_State.Attacking;
         navMeshAgent.SetDestination(transform.position);
         animator.SetBool("Punching", true);
@@ -323,7 +323,7 @@ public class Base_AI : MonoBehaviour
         mAttackTimer = mAttackTime;
     }
 
-    protected void SetToAttacking_Ranged() {
+    virtual protected void SetToAttacking_Ranged() {
         if (weap.GetAmmoPercent() == 0) {
             animator.SetBool("Shooting", false);
             SetToIdle();
@@ -338,7 +338,7 @@ public class Base_AI : MonoBehaviour
         weaponPoint.transform.LookAt(target.position + Vector3.up);
     }
 
-    protected void Die() {
+    virtual protected void Die() {
         animator.SetTrigger("Death");
         capsuleCollider.enabled = false;
         navMeshAgent.enabled = false;
@@ -358,7 +358,7 @@ public class Base_AI : MonoBehaviour
     /// Base Object detection which can only see the player, when overriding call base last
     /// </summary>
     /// <param name="visibleObjects"></param>
-    protected void ObjectsDetected(List<Transform> visibleObjects) {
+    virtual protected void ObjectsDetected(List<Transform> visibleObjects) {
         //Debug.Log("Objects detected: " + visibleObjects.Count);
         foreach (Transform obj in visibleObjects) {
             if (obj == null)
@@ -378,7 +378,7 @@ public class Base_AI : MonoBehaviour
         }
         target = null;
     }
-    protected void Damaged(Vector3 damageOrigin) {
+    virtual protected void Damaged(Vector3 damageOrigin) {
         if (health.GetHeatlthPercent() != 0) {
             hitInvest = true;
             if (sightInvest) {
@@ -399,13 +399,13 @@ public class Base_AI : MonoBehaviour
             navMeshAgent.isStopped = true;
         }
     }
-    protected void SoundDetected(Vector3 calculatedOrigin) {
+    virtual protected void SoundDetected(Vector3 calculatedOrigin) {
         if(target == null && !sightInvest && !hitInvest) {
             targetPosition = calculatedOrigin;
             SetToInvestigating();
         }
     }
-    protected void SmellDetected(Vector3 calculatedDirection) {
+    virtual protected void SmellDetected(Vector3 calculatedDirection) {
         if (target == null && !sightInvest && !soundInvest && !hitInvest) {
             Ray ray = new Ray(transform.position, calculatedDirection);
             Debug.DrawRay(transform.position, calculatedDirection * 20f, Color.red, 5f);

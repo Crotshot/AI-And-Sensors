@@ -7,8 +7,7 @@ using Helpers = Crotty.Helpers.StaticHelpers;
 public class Base_AI : MonoBehaviour
 {
     [SerializeField] Transform[] patrolPoints;
-    [SerializeField] Weapon weap;
-    [SerializeField] float aiIdleTime, aiIdleTimeDeviation, stunTime, orderComlpletion, attackDist, walkingSpeed, runningSpeed;
+    [SerializeField] float aiIdleTime, aiIdleTimeDeviation, stunTime, orderComlpletion, walkingSpeed, runningSpeed;
     #region Non Serialized
     Vector3 targetPosition;
     Transform target;
@@ -23,13 +22,22 @@ public class Base_AI : MonoBehaviour
     AI_Vision ai_Vision;
     #endregion
 
+    #region Ranged
+    [SerializeField] Weapon weap;
+    [SerializeField] Transform weaponPoint;
+    [SerializeField] float rAttackTime, rShotTime, rAttackDist;//attackTime is full length of cycle, shotTime is how long into the cycle until it shoots
+    float rAttackTimer;
+    bool shot;
+    #endregion
+
     #region Melee
     BoxCollider fistBox;
-    //hitBoxTime is how far into the punch until the hit bopx appears and hitBox Linger is hot long the box stays
-    [SerializeField] float punchTime, hitBoxTime, hitBoxLinger, punchDamage;
-    float punchTimer;
-    bool punching;
+    //hitBoxTime is how far into the punch until the hit box appears and hitBox Linger is hot long the box stays, ranged attacks shoot immediately
+    [SerializeField] float mAttackTime, hitBoxTime, hitBoxLinger, mAttackDamage, mAttackDist;
+    float mAttackTimer;
     #endregion
+
+
     /// <summary>
     /// Idle -> The unit is standing around doing nothing
     /// Patrolling -> The unit is moving form one point to another
@@ -55,6 +63,9 @@ public class Base_AI : MonoBehaviour
 
         if(combat_Type == Combat_Type.Melee) {
             fistBox = GetComponent<BoxCollider>();
+        }
+        else {
+            weap.PickUp(weaponPoint, false);
         }
 
         animator = GetComponent<Animator>();
@@ -106,6 +117,7 @@ public class Base_AI : MonoBehaviour
     private void Update() {
         if (Time.timeScale == 0 || dead)
             return;
+        Debug.DrawRay(transform.position,transform.forward,Color.blue);
         if(stunTimer > 0) {
             stunTimer -= Time.deltaTime;
             if(stunTimer <= 0) {
@@ -113,8 +125,6 @@ public class Base_AI : MonoBehaviour
                 navMeshAgent.speed = speedBeforeStun;
                 navMeshAgent.isStopped = false;
                 speedBeforeStun = -1;
-                if (punching)
-                    SetToAttacking(); //If the AI was punching when it was stunned reset the punch
             }
             return;
         }
@@ -135,7 +145,12 @@ public class Base_AI : MonoBehaviour
                 Seeking();
                 break;
             case AI_State.Attacking:
-                Attacking();
+                if(combat_Type == Combat_Type.Melee) {
+                    AttackingMelee();
+                }
+                else {
+                    AttackingRanged();
+                }
                 break;
             case AI_State.Fleeing:
                 Fleeing();
@@ -177,42 +192,70 @@ public class Base_AI : MonoBehaviour
             SetToInvestigating();
             return;
         }
-        if (Helpers.Vector3Distance(transform.position, target.position) <= attackDist) {
+        if (Helpers.Vector3Distance(transform.position, target.position) <= (combat_Type == Combat_Type.Melee ? mAttackDist : rAttackDist)) {
             SetToAttacking();
         }
         else {
             navMeshAgent.SetDestination(target.position);
         }
     }
-    protected void Attacking() {
+    protected void AttackingMelee() {
         if (target == null) {
-            Debug.Log("Lost target mid attack");
+            //Debug.Log("Lost target mid melee attack");
             animator.SetBool("Punching", false);
-            animator.SetTrigger("PunchInterupt");
             SetToInvestigating();
             return;
         }
-        if (Helpers.Vector3Distance(transform.position, target.position) > attackDist * 1.1f) {
-            Debug.Log("Too far, getting closer!");
+        if (Helpers.Vector3Distance(transform.position, target.position) > mAttackDist * 1.1f) {
+           // Debug.Log("Too far, getting closer to melee!");
             animator.SetBool("Punching", false);
-            animator.SetTrigger("PunchInterupt");
             SetToSeeking(target);
             return;
         }
 
-        punchTimer = punchTimer > 0 ? punchTimer -= Time.deltaTime : 0;
+        mAttackTimer = mAttackTimer > 0 ? mAttackTimer -= Time.deltaTime : 0;
 
-        if (punchTime - punchTimer >= hitBoxTime && punchTime - punchTimer < hitBoxTime + hitBoxLinger)
+        if (mAttackTime - mAttackTimer >= hitBoxTime && mAttackTime - mAttackTimer < hitBoxTime + hitBoxLinger)
             fistBox.enabled = true;
         else
             fistBox.enabled = false;
-        if (punchTime - punchTimer >= 1) {
-            SetToAttacking();
-            Debug.Log("Trowing another dig");
+
+        if (mAttackTime - mAttackTimer >= 1) {
+            SetToAttacking_Melee();
+           // Debug.Log("Melee Attacking again");
         }
 
         transform.LookAt(target);
     }
+
+    protected void AttackingRanged() {
+        if (target == null) {
+            Debug.Log("Lost target  while shooting");
+            animator.SetBool("Shooting", false);
+            SetToInvestigating();
+            return;
+        }
+        if (Helpers.Vector3Distance(transform.position, target.position) > rAttackDist * 1.4f) {
+            Debug.Log("Too far, getting closer to shoot!");
+            animator.SetBool("Shooting", false);
+            SetToSeeking(target);
+            return;
+        }
+
+        rAttackTimer = rAttackTimer > 0 ? rAttackTimer -= Time.deltaTime : 0;
+
+        if (rAttackTime - rAttackTimer >= rShotTime && !shot) {
+            weap.Shoot();
+            shot = true;
+        }
+        if (rAttackTime - rAttackTimer >= 1) {
+            SetToAttacking_Ranged();
+            Debug.Log("Shooting again");
+        }
+
+        transform.LookAt(target);
+    }
+
     protected void Fleeing() {
 
     }
@@ -263,18 +306,30 @@ public class Base_AI : MonoBehaviour
     }
 
     protected void SetToAttacking() {
-        ai_State = AI_State.Attacking;
-        navMeshAgent.SetDestination(transform.position);
-        if(combat_Type == Combat_Type.Melee) {
-            animator.SetTrigger("Punch");
+        if (combat_Type == Combat_Type.Ranged) {
+            SetToAttacking_Ranged();
         }
         else {
-            animator.SetTrigger("Shoot");
+            SetToAttacking_Melee();
         }
+    }
+    //Duplicate code between melee and ranged as they are called directly instead of SetToAttacking in some locals
+    protected void SetToAttacking_Melee() {
+        ai_State = AI_State.Attacking;
+        navMeshAgent.SetDestination(transform.position);
         animator.SetBool("Punching", true);
         animator.SetBool("Walking", false);
-        punchTimer = punchTime;
-        
+        mAttackTimer = mAttackTime;
+    }
+
+    protected void SetToAttacking_Ranged() {
+        ai_State = AI_State.Attacking;
+        navMeshAgent.SetDestination(transform.position);
+        animator.SetBool("Shooting", true);
+        animator.SetBool("Walking", false);
+        rAttackTimer = rAttackTime;
+        shot = false;//Dont shoot immediately to allow animation to transition
+        weaponPoint.transform.LookAt(target.position + Vector3.up);
     }
 
     protected void Die() {
@@ -355,10 +410,10 @@ public class Base_AI : MonoBehaviour
     }
     #endregion
 
-    //Punch Trigger 
+    //attack Trigger 
     private void OnTriggerEnter(Collider other) {
         if (other.tag.Equals("Player") && other.TryGetComponent(out Health hp)) {
-            hp.HealthChange(-punchDamage);
+            hp.HealthChange(-mAttackDamage);
         }
     }
 }

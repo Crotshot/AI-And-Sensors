@@ -13,10 +13,10 @@ public class Weapon : MonoBehaviour
     [SerializeField] ParticleSystem casing, bullet, muzzle;
     [SerializeField] Transform bulletPos;
     Animator animator;
-    Transform hitPoint;
+    Transform hitPoint, fakeParent;
 
     int currentMag, currentReserve, layer;
-    private bool pickUp, canShoot,  reloading, playerHeld;
+    private bool pickUp, canShoot,  reloading, playerHeld, aiHeld;
     private float reloadTimer, shotTimer;
     Rigidbody rb;
     ParticleSystem hit;
@@ -26,34 +26,18 @@ public class Weapon : MonoBehaviour
         currentMag = magSize;
         currentReserve = startingReserve;
         animator = GetComponent<Animator>();
-        hitPoint = transform.GetChild(1);
+        hitPoint = transform.GetChild(2);
         hit = hitPoint.GetComponent<ParticleSystem>();
         layer = 1 << LayerMask.NameToLayer("Default");
     }
 
-    //TEST BOOLEANS
-   // public bool testShoot, testReload, testDrop, testPickUp;
-    //
     private void Update() {
-        //TEST-------------------------------------------------------------------------------------------------
-        //if (testShoot) {
-        //    testShoot = false;
-        //    Shoot(false);
-        //}
-        //else if (testReload) {
-        //    testReload = false;
-        //    Reload();
-        //}
-        //else if (testDrop) {
-        //    testDrop = false;
-        //    Drop();
-        //}
-        //else if (testPickUp) {
-        //    testPickUp = false;
-        //    PickUp(GameObject.FindGameObjectWithTag("Player").transform.GetChild(0).GetChild(0));
-        //}
-        //-------------------------------------------------------------------------------------------------
 
+        if (aiHeld && fakeParent != null) {
+//            transform.position = fakeParent.TransformPoint(fakeParent.position);
+            transform.position = fakeParent.position;
+            transform.eulerAngles = fakeParent.eulerAngles;
+        }
         if (reloading && pickUp) {
             if(reloadTimer > 0) {
                 reloadTimer -= Time.deltaTime;
@@ -75,24 +59,29 @@ public class Weapon : MonoBehaviour
             }
         }
         shotTimer = shotTimer >= 0 ? shotTimer -= Time.deltaTime : 0;
-        if(shotTimer < 0 && currentMag > 0 && !reloading) {
+        if(shotTimer < 0 && ((!aiHeld && currentMag > 0 && !reloading) || (aiHeld && currentReserve > 0))) {
             canShoot = true;
             shotTimer = 0;
         }
     }
 
-    public float Shoot(bool overide) {
-        if (!pickUp && !overide)
+    public float Shoot() {
+        if (!pickUp)
             return 0f;
         if(canShoot) {
-            currentMag--;
+            if (!aiHeld)
+                currentMag--;
+            else
+                currentReserve--;
+            
             shotTimer = 1f/(fireRate_RPM / 60f);
             magText.text = currentMag.ToString();
-            animator.SetTrigger("Shot");
+            if(!aiHeld)
+                animator.SetTrigger("Shot");
 
             Ray ray = new Ray(bulletPos.position, bulletPos.forward);
-            Debug.DrawRay(bulletPos.position, bulletPos.forward * maxRange, Color.red, 5f);
             if (Physics.Raycast(ray, out RaycastHit hit, maxRange, layer, QueryTriggerInteraction.Ignore)) {
+                Debug.DrawLine(bulletPos.position, hit.point, Color.green, 5f);
                 hitPoint.position = hit.point;
                 hitPoint.LookAt(transform.position);
                 this.hit.Emit(hitParticleCount);
@@ -102,12 +91,13 @@ public class Weapon : MonoBehaviour
                 }
             }
             else {
-                bullet.Emit(1);
+                //bullet.Emit(1);
+                Debug.DrawRay(bulletPos.position, bulletPos.forward * maxRange, Color.red, 5f);
             }
 
             casing.Emit(1);
             muzzle.Emit(1);
-            if (currentMag >= 0) {
+            if (currentMag >= 0 || (aiHeld && currentReserve >= 0)) {
                 canShoot = false;
             }
 
@@ -124,14 +114,21 @@ public class Weapon : MonoBehaviour
     public void PickUp(Transform point, bool player) {
         pickUp = true;
         if (player) {
+            aiHeld = false;
             bulletPos = FindObjectOfType<Camera>().transform;
+            transform.GetChild(0).GetChild(0).gameObject.SetActive(true); //Enable Weapon UI
         }
         else {
+            fakeParent = point;
+            aiHeld = true;
             bulletPos = transform.GetChild(1);
+            currentReserve += currentMag;
+            currentMag = 0;
         }
         canShoot = !reloading;
-        transform.parent = point;
-        transform.GetChild(0).GetChild(0).gameObject.SetActive(true); //Enable Weapon UI
+        if(!aiHeld)
+            transform.parent = point;
+        
         magText.text = currentMag.ToString();
         reserveText.text = currentReserve.ToString();
 
@@ -161,6 +158,7 @@ public class Weapon : MonoBehaviour
         transform.GetChild(0).GetChild(0).gameObject.SetActive(false); //Disable Weapon UI
         rb.useGravity = true;
         rb.constraints = RigidbodyConstraints.None;
+        fakeParent = null;
         transform.parent = null;
 
         if (reloading) {

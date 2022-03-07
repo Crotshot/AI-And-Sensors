@@ -1391,18 +1391,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   patrolPoints: []
-  weap: {fileID: 0}
   aiIdleTime: 1
   aiIdleTimeDeviation: 0.5
   stunTime: 2
   orderComlpletion: 4
-  attackDist: 2
   walkingSpeed: 1.5
   runningSpeed: 6
-  punchTime: 1
+  weap: {fileID: 0}
+  weaponPoint: {fileID: 5705114578456711200}
+  rAttackTime: 1
+  rShotTime: 0.01
+  rAttackDist: 15
+  mAttackTime: 1
   hitBoxTime: 0.5
   hitBoxLinger: 0.15
-  punchDamage: 25
+  mAttackDamage: 25
+  mAttackDist: 2
 --- !u!114 &911057237003031878
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2076,13 +2080,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5705114578456711201}
-  m_LocalRotation: {x: -0.5374425, y: 0.41915503, z: 0.5087617, w: 0.5259526}
-  m_LocalPosition: {x: -0.0369, y: 0.2252, z: 0.037}
+  m_LocalRotation: {x: -0.39256826, y: 0.442602, z: 0.57256436, w: 0.56759465}
+  m_LocalPosition: {x: -0.022, y: 0.238, z: 0.112}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2806381901377159909}
   m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: -82.675, y: -56.199, z: 138.415}
+  m_LocalEulerAnglesHint: {x: -72.265, y: 10, z: 83.19}
 --- !u!1 &5769773509739237390
 GameObject:
   m_ObjectHideFlags: 0

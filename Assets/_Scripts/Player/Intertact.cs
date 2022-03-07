@@ -49,7 +49,7 @@ public class Intertact : MonoBehaviour
         }
         else {
             if (inputs.GetAction_1_2_Input() > 0) {
-                GetComponentInChildren<NoiseMaker>().MakeNoise(weapon.Shoot(false));
+                GetComponentInChildren<NoiseMaker>().MakeNoise(weapon.Shoot());
             }
             if (inputs.GetReloadInput() > 0) {
                 weapon.Reload();

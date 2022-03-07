@@ -41,7 +41,11 @@ public class Green_AI : Base_AI {
                         }
                     }
                     if (!alreadyScanned) {//This is done so that we dont add the same health pack/ammo pack multiple times to the ammo/health pack lists
-                        GameObject marker = new GameObject("Ammo_Marker");
+                        GameObject marker;
+                        if(obj.transform.localScale.x == 1) 
+                           marker = new GameObject("Large_Ammo_Marker");//AI can distinguish between large and small ammo packs
+                        else
+                            marker = new GameObject("Small_Ammo_Marker");
                         marker.transform.position = pickUp.transform.position;
                         marker.AddComponent<MarkerOwner>().markerOwner = gameObject.GetInstanceID();
                         Debug.Log("Remembering Ammo Marker");
@@ -56,7 +60,11 @@ public class Green_AI : Base_AI {
                         }
                     }
                     if (!alreadyScanned) {
-                        GameObject marker = new GameObject("Health_Marker");
+                        GameObject marker;
+                        if (obj.transform.localScale.x == 1)
+                            marker = new GameObject("Large_Health_Marker");//AI can distinguish between large and small health packs
+                        else
+                            marker = new GameObject("Small_Health_Marker");
                         marker.transform.position = pickUp.transform.position;
                         marker.AddComponent<MarkerOwner>().markerOwner = gameObject.GetInstanceID();
                         Debug.Log("Remembering Health Marker");

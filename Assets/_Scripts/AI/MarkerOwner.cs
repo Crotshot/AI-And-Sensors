@@ -11,5 +11,14 @@ public class MarkerOwner : MonoBehaviour
         SphereCollider sC = gameObject.AddComponent<SphereCollider>();
         sC.radius = 0.25f;
         sC.isTrigger = true;
+        gameObject.layer = 7;
     }
+
+
+#if UNITY_EDITOR
+    private void OnDrawGizmos() {
+        Gizmos.color = Color.blue;
+        Gizmos.DrawSphere(transform.position, 0.2f);
+    }
+#endif
 }

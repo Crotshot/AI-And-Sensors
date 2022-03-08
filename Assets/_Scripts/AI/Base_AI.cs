@@ -9,8 +9,8 @@ public class Base_AI : MonoBehaviour
     [SerializeField] protected Transform[] patrolPoints;
     [SerializeField] protected float aiIdleTime, aiIdleTimeDeviation, stunTime, orderComlpletion, walkingSpeed, runningSpeed;
     #region Non Serialized
-    protected Vector3 targetPosition;
-    protected Transform target;
+    protected Vector3 baseTargetPosition;
+    protected Transform baseTarget;
     protected Animator animator;
     protected CapsuleCollider capsuleCollider;
     protected NavMeshAgent navMeshAgent;
@@ -56,7 +56,7 @@ public class Base_AI : MonoBehaviour
     protected int currentPoint;
     protected bool dead, soundInvest, sightInvest, hitInvest;
     #endregion
-
+    #region Overidables
     virtual protected void Start() {
         combat_Type = weap == null ? Combat_Type.Melee : Combat_Type.Ranged;
         ai_State = AI_State.Idle;
@@ -93,7 +93,7 @@ public class Base_AI : MonoBehaviour
         SetToIdle();
     }
 
-    void Reset_Unit() {
+    virtual protected void Reset_Unit() {
         capsuleCollider.enabled = true;
         health.enabled = true;
 
@@ -115,14 +115,14 @@ public class Base_AI : MonoBehaviour
         SetToIdle();
     }
 
-    private void Update() {
+    virtual protected void Update() {
         if (Time.timeScale == 0 || dead)
             return;
         Debug.DrawRay(transform.position,transform.forward,Color.blue);
         if(stunTimer > 0) {
             stunTimer -= Time.deltaTime;
             if(stunTimer <= 0) {
-                navMeshAgent.SetDestination(targetPosition);
+                navMeshAgent.SetDestination(baseTargetPosition);
                 navMeshAgent.speed = speedBeforeStun;
                 navMeshAgent.isStopped = false;
                 speedBeforeStun = -1;
@@ -146,12 +146,7 @@ public class Base_AI : MonoBehaviour
                 Seeking();
                 break;
             case AI_State.Attacking:
-                if(combat_Type == Combat_Type.Melee) {
-                    AttackingMelee();
-                }
-                else {
-                    AttackingRanged();
-                }
+                Attacking();
                 break;
             case AI_State.Fleeing:
                 Fleeing();
@@ -165,7 +160,7 @@ public class Base_AI : MonoBehaviour
         }
     }
 
-    #region Overidables
+    
     virtual protected void Idle() {
         if (timer > 0) {
             timer -= Time.deltaTime;
@@ -181,7 +176,7 @@ public class Base_AI : MonoBehaviour
 
     }
     virtual protected void Investigating() {
-        if(Helpers.Vector3Distance(transform.position, targetPosition) <= 3f) {
+        if(Helpers.Vector3Distance(transform.position, baseTargetPosition) <= 3f) {
             SetToIdle();
             sightInvest = false;
             soundInvest = false;
@@ -189,28 +184,37 @@ public class Base_AI : MonoBehaviour
         }
     }
     virtual protected void Seeking() {
-        if(target == null) {
+        if(baseTarget == null) {
             SetToInvestigating();
             return;
         }
-        if (Helpers.Vector3Distance(transform.position, target.position) <= (combat_Type == Combat_Type.Melee ? mAttackDist : rAttackDist)) {
+        if (Helpers.Vector3Distance(transform.position, baseTarget.position) <= (combat_Type == Combat_Type.Melee ? mAttackDist : rAttackDist)) {
             SetToAttacking();
         }
         else {
-            navMeshAgent.SetDestination(target.position);
+            navMeshAgent.SetDestination(baseTarget.position);
+        }
+    }
+
+    virtual protected void Attacking() {
+        if (combat_Type == Combat_Type.Melee) {
+            AttackingMelee();
+        }
+        else {
+            AttackingRanged();
         }
     }
     virtual protected void AttackingMelee() {
-        if (target == null) {
-            //Debug.Log("Lost target mid melee attack");
+        if (baseTarget == null) {
+            //Debug.Log("Lost baseTarget mid melee attack");
             animator.SetBool("Punching", false);
             SetToInvestigating();
             return;
         }
-        if (Helpers.Vector3Distance(transform.position, target.position) > mAttackDist * 1.1f) {
+        if (Helpers.Vector3Distance(transform.position, baseTarget.position) > mAttackDist * 1.1f) {
            // Debug.Log("Too far, getting closer to melee!");
             animator.SetBool("Punching", false);
-            SetToSeeking(target);
+            SetToSeeking(baseTarget);
             return;
         }
 
@@ -226,20 +230,20 @@ public class Base_AI : MonoBehaviour
            // Debug.Log("Melee Attacking again");
         }
 
-        transform.LookAt(target);
+        transform.LookAt(baseTarget);
     }
 
     virtual protected void AttackingRanged() {
-        if (target == null) {
-            Debug.Log("Lost target  while shooting");
+        if (baseTarget == null) {
+            Debug.Log("Lost baseTarget  while shooting");
             animator.SetBool("Shooting", false);
             SetToInvestigating();
             return;
         }
-        if (Helpers.Vector3Distance(transform.position, target.position) > rAttackDist * 1.4f) {
+        if (Helpers.Vector3Distance(transform.position, baseTarget.position) > rAttackDist * 1.4f) {
             Debug.Log("Too far, getting closer to shoot!");
             animator.SetBool("Shooting", false);
-            SetToSeeking(target);
+            SetToSeeking(baseTarget);
             return;
         }
 
@@ -254,7 +258,7 @@ public class Base_AI : MonoBehaviour
             Debug.Log("Shooting again");
         }
 
-        transform.LookAt(target);
+        transform.LookAt(baseTarget);
     }
 
     virtual protected void Fleeing() {
@@ -294,14 +298,14 @@ public class Base_AI : MonoBehaviour
     }
     virtual protected void SetToSeeking(Transform targ) {
         ai_State = AI_State.Seeking;
-        target = targ;
+        baseTarget = targ;
         navMeshAgent.SetDestination(targ.position);
         animator.SetBool("Running", true);
         navMeshAgent.speed = runningSpeed;
     }
     virtual protected void SetToInvestigating() {
         ai_State = AI_State.Investigating;
-        navMeshAgent.SetDestination(targetPosition);
+        navMeshAgent.SetDestination(baseTargetPosition);
         animator.SetBool("Running", true);
         navMeshAgent.speed = runningSpeed;
     }
@@ -335,7 +339,7 @@ public class Base_AI : MonoBehaviour
         animator.SetBool("Walking", false);
         rAttackTimer = rAttackTime;
         shot = false;//Dont shoot immediately to allow animation to transition
-        weaponPoint.transform.LookAt(target.position + Vector3.up);
+        weaponPoint.transform.LookAt(baseTarget.position + Vector3.up);
     }
 
     virtual protected void Die() {
@@ -372,21 +376,21 @@ public class Base_AI : MonoBehaviour
                 return;
             }
         }
-        if(target != null) {
-            targetPosition = target.position;
+        if(baseTarget != null) {
+            baseTargetPosition = baseTarget.position;
             Debug.Log("Lost Player");
         }
-        target = null;
+        baseTarget = null;
     }
     virtual protected void Damaged(Vector3 damageOrigin) {
         if (health.GetHeatlthPercent() != 0) {
             hitInvest = true;
             if (sightInvest) {
-                targetPosition = navMeshAgent.destination;
+                baseTargetPosition = navMeshAgent.destination;
             }
             else {
                 Debug.DrawRay(damageOrigin, Vector3.up * 10f, Color.red, 10f);
-                targetPosition = damageOrigin;
+                baseTargetPosition = damageOrigin;
                 SetToInvestigating();
             }
 
@@ -400,17 +404,17 @@ public class Base_AI : MonoBehaviour
         }
     }
     virtual protected void SoundDetected(Vector3 calculatedOrigin) {
-        if(target == null && !sightInvest && !hitInvest) {
-            targetPosition = calculatedOrigin;
+        if(baseTarget == null && !sightInvest && !hitInvest) {
+            baseTargetPosition = calculatedOrigin;
             SetToInvestigating();
         }
     }
     virtual protected void SmellDetected(Vector3 calculatedDirection) {
-        if (target == null && !sightInvest && !soundInvest && !hitInvest) {
+        if (baseTarget == null && !sightInvest && !soundInvest && !hitInvest) {
             Ray ray = new Ray(transform.position, calculatedDirection);
             Debug.DrawRay(transform.position, calculatedDirection * 20f, Color.red, 5f);
-            //targetPosition = transform.TransformPoint(ray.GetPoint(20f));
-            targetPosition = ray.GetPoint(20f);
+            //baseTargetPosition = transform.TransformPoint(ray.GetPoint(20f));
+            baseTargetPosition = ray.GetPoint(12.5f);
             SetToInvestigating();
         }
     }

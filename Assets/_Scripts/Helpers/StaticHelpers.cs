@@ -58,6 +58,8 @@ namespace Crotty.Helpers {
 
 
         public static Transform FindClosestTransform(List<Transform> points, Vector3 position) {
+            if (points.Count < 1)
+                return null;
             Transform trans = points[0];
             foreach (Transform point in points) {
                 if(Vector3Distance(position, point.position) < Vector3Distance(position, trans.position)) {
@@ -65,6 +67,31 @@ namespace Crotty.Helpers {
                 }
             }
             return trans;
+        }
+
+
+        public static List<Transform> FindTransformsOutsideRadius(List<Transform> points, Vector3 position, float distance) {
+            List<Transform> poss = new List<Transform>();
+            foreach (Transform point in points) {
+                if (Vector3Distance(position, point.position) >= distance) {
+                    poss.Add(point);
+                }
+            }
+            return poss;
+        }
+
+        public static Transform FindFurthestTransform(List<Transform> points, Vector3 position) {
+            Transform trans = points[0];
+            foreach (Transform point in points) {
+                if (Vector3Distance(position, point.position) > Vector3Distance(position, trans.position)) {
+                    trans = point;
+                }
+            }
+            return trans;
+        }
+
+        public static Transform RandomTransform(List<Transform> points, Vector3 position) {
+            return points[Random.Range(0, points.Count)];
         }
     }
 }

@@ -1350,7 +1350,7 @@ NavMeshAgent:
   m_Acceleration: 99
   avoidancePriority: 50
   m_AngularSpeed: 360
-  m_StoppingDistance: 0.65
+  m_StoppingDistance: 0.2
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
@@ -1470,6 +1470,7 @@ MonoBehaviour:
   anosmiaStrength: 0
   minSmellStrength: 0
   maxSmellStrength: 1
+  travelDistance: 12.5
   inAccuracy: 0
   accuracy: 0
   investigationTimeMinimum: 15

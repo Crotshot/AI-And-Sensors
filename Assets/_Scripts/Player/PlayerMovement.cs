@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField] float lookSpeedX, lookSpeedY, moveSpeed, cameraLimitUp, cameraLimitDown, sidewaysMoveSpeedModifier, sprintSpeedModifier, walkingNoise, runningNoise;
+    [SerializeField] float lookSpeedX, lookSpeedY, moveSpeed, cameraLimitUp, cameraLimitDown, sidewaysMoveSpeedModifier, sprintSpeedModifier, walkingNoise, runningNoise, idleNoise;
     Transform playerCam;
     Inputs inputs;
     NoiseMaker nM;
 
-    private void Start() {
+    private void Awake() {
         inputs = FindObjectOfType<Inputs>();
         playerCam = transform.GetChild(0);
         nM = GetComponentInChildren<NoiseMaker>();
@@ -54,7 +54,7 @@ public class PlayerMovement : MonoBehaviour
             }
         }
         else {
-            nM.MakeNoise(3f);
+            nM.MakeNoise(idleNoise);
         }
     }
 }

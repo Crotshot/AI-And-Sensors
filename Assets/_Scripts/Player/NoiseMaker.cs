@@ -14,6 +14,9 @@ public class NoiseMaker : MonoBehaviour
     }
 
     private void FixedUpdate() {
+        if(radius > minHearRadius) {
+            radius *= 0.98f;
+        }
         if (noiseFrame) {
             audibleNoise.radius = minHearRadius;
         }
@@ -32,6 +35,12 @@ public class NoiseMaker : MonoBehaviour
     }
 
     public void MakeNoise(float noiseRadius) {
+        if (noiseRadius < radius)
+            return;
         radius = noiseRadius;
+    }
+
+    public void off() {
+        radius = 0;
     }
 }

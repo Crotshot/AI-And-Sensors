@@ -12,8 +12,9 @@ public class AI_Smell : MonoBehaviour
     /// <summary>
     /// The minimum smell that a character can detect, any strength beneath this is disraguarded
     /// The maximum smell is the strength a character needs to be able to get the maximum directional accuracy
+    /// Travel distance is how far in the direction of the smell the AI will travel
     /// </summary>
-    [SerializeField] [Min(0f)] float minSmellStrength, maxSmellStrength;
+    [SerializeField] [Min(0f)] float minSmellStrength, maxSmellStrength, travelDistance;
     /// <summary>
     /// Inaccuracy => the directional reading are for a characters smell, high values means more inaccuracy
     /// Accuracy => The maximum accuracy the character can have from smell
@@ -62,13 +63,12 @@ public class AI_Smell : MonoBehaviour
 
 
     IEnumerator MemoryLoss() {
-        while (true) {
-            yield return new WaitForSeconds(1f);
-            rememberenceTimer -= 1f;
-            if (rememberenceTimer <= 0)
-                break;
-        }
+        yield return new WaitForSeconds(rememberenceTimer);
         sniffDirection = Vector3.zero;
         scentDetected?.Invoke(sniffDirection);//When direction is 0,0,0 the smell is lost
+    }
+
+    public float GetTravelDistance() {
+        return travelDistance;
     }
 }

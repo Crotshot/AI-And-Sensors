@@ -21,7 +21,7 @@ public class Button_Spawn_AI : Button_Base
         GameObject ai = Instantiate(prefabToSpawn, pickedPos.position, pickedPos.rotation);
 
         if(patrolPoints.Length > 0) {
-            ai.GetComponent<Base_AI>().AssignConmtrolPoints(patrolPoints);
+            ai.GetComponent<Base_AI>().AssignControlPoints(patrolPoints);
         }
     }
 }

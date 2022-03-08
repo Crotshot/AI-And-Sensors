@@ -93,5 +93,31 @@ namespace Crotty.Helpers {
         public static Transform RandomTransform(List<Transform> points, Vector3 position) {
             return points[Random.Range(0, points.Count)];
         }
+        /// <summary>
+        /// Check if float c is between floats a and b
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="c"></param>
+        /// <returns></returns>
+        public static bool FloatIsBetween(float a, float b, float c) {
+
+            if(a > b) {
+                float temp = b;
+                b = a;
+                a = temp;
+            }
+            else if(a == b){
+                if (a != c)
+                    return false;
+            }
+
+            if (c < a)
+                return false;
+            if (c > b)
+                return false;
+
+            return true;
+        }
     }
 }

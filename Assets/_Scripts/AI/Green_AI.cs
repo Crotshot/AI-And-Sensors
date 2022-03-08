@@ -38,7 +38,7 @@ public class Green_AI : Base_AI {
     protected Transform packTarget;
     protected Vector3 packTargetPosition;
 
-    override protected void Start() {
+    protected override void Start() {
         base.Start();
         ammoPacks = new List<Transform>();
         healthPacks = new List<Transform>();
@@ -57,7 +57,7 @@ public class Green_AI : Base_AI {
         base.Update();
     }
 
-    override protected void CalculateNextPoint() {//Checks distance to current control point and sets it to random
+    protected override void CalculateNextPoint() {//Checks distance to current control point and sets it to random
         float distance = Helpers.Vector3Distance(transform.position, patrolPoints[currentPoint].position);
         if (distance <= orderComlpletion) {
             currentPoint = Random.Range(0, patrolPoints.Length);
@@ -153,7 +153,7 @@ public class Green_AI : Base_AI {
             }
     }
 
-    virtual protected void SetToWandering() {
+    protected virtual void SetToWandering() {
         animator.SetBool("Running", false);
         animator.SetBool("Walking", true);
         navMeshAgent.speed = walkingSpeed;
@@ -206,7 +206,7 @@ public class Green_AI : Base_AI {
     /// Returns boolean of success if it goes to flee else it will stay
     /// </summary>
     /// <returns></returns>
-    virtual protected bool SetToFleeing() {
+    protected virtual bool SetToFleeing() {
         navMeshAgent.speed = runningSpeed;
         shortFleeTimer = shortFleeTime + Random.Range(-shortFleeTimeDeviation, shortFleeTimeDeviation);
         if (fleeTimer <= 0 && weap.GetAmmoPercent() > 0) {
@@ -294,7 +294,7 @@ public class Green_AI : Base_AI {
         }
     }
 
-    protected bool FleeCheck() { //Checks if ai wants health or ammo, if it does newly want ammo or health set the fleeTimer
+    protected virtual bool FleeCheck() { //Checks if ai wants health or ammo, if it does newly want ammo or health set the fleeTimer
         if (health.GetHeatlthPercent() < lowHealthThreshold) {
             if (!wantsHealth) {//AI had reosurces that are now gone so it shall fully reset its fleeing ability
                 fleeTimer = maxFleeTime + Random.Range(-maxFleeTimeDeviation, maxFleeTimeDeviation);//Only called once everytime it freshly needs resources
@@ -322,7 +322,7 @@ public class Green_AI : Base_AI {
     /// <summary>
     /// Sets ai baseTarget position to a random point somewhere
     /// </summary>
-    protected void SetToRandomPoint() {
+    protected virtual void SetToRandomPoint() {
         Transform p = GameObject.FindGameObjectWithTag("FleePoints").transform;
         baseTarget = p.GetChild(Random.Range(0, p.childCount));
     }
@@ -336,7 +336,7 @@ public class Green_AI : Base_AI {
     //    packTargetPosition = p.GetChild(Random.Range(0, p.childCount)).position;
     //}
 
-    protected void SetToPointAwayFrombaseTargetPosition() { //Flee to the point that is the furthest from the player
+    protected virtual void SetToPointAwayFrombaseTargetPosition() { //Flee to the point that is the furthest from the player
         Transform p = GameObject.FindGameObjectWithTag("FleePoints").transform;
         List<Transform> ps = new List<Transform>();
         foreach(Transform child in p) {

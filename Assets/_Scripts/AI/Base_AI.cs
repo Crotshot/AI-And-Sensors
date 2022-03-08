@@ -414,7 +414,7 @@ public class Base_AI : MonoBehaviour
             Ray ray = new Ray(transform.position, calculatedDirection);
             Debug.DrawRay(transform.position, calculatedDirection * 20f, Color.red, 5f);
             //baseTargetPosition = transform.TransformPoint(ray.GetPoint(20f));
-            baseTargetPosition = ray.GetPoint(12.5f);
+            baseTargetPosition = ray.GetPoint(ai_Smell.GetTravelDistance());
             SetToInvestigating();
         }
     }
@@ -427,7 +427,7 @@ public class Base_AI : MonoBehaviour
         }
     }
 
-    public void AssignConmtrolPoints(Transform[] transforms) {
+    public void AssignControlPoints(Transform[] transforms) {
         patrolPoints = transforms;
     }
 

@@ -1,10 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Helpers = Crotty.Helpers.StaticHelpers;
 
 public class Yellow_AI : Green_AI
 {
     protected bool desiresHealth;
+    Transform player;
+
+    protected override void Start() {
+        base.Start();
+        player = FindObjectOfType<PlayerMovement>().transform;//AI always knows where player is
+    }
     protected override void ObjectsDetected(List<Transform> visibleObjects) {
         if (desiresHealth) {
             foreach (Transform obj in visibleObjects) {
@@ -56,5 +63,26 @@ public class Yellow_AI : Green_AI
             wantsAmmo = false;
         }
         return false;
+    }
+
+    override protected void Seeking() {
+        if (desiresHealth) {//AI saw and walked to a health pack
+            if(Helpers.Vector3Distance(transform.position, navMeshAgent.destination) <= orderComlpletion) {
+                desiresHealth = false;
+            }
+            return;
+        }
+
+        if (Helpers.Vector3Distance(transform.position, player.position) <= (combat_Type == Combat_Type.Melee ? mAttackDist : rAttackDist)) {
+            SetToAttacking();
+        }
+        else {
+            navMeshAgent.SetDestination(player.position);
+        }
+    }
+
+
+    override protected void SetToInvestigating() {
+        SetToSeeking(player);
     }
 }

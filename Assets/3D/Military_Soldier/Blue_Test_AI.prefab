@@ -42,7 +42,7 @@ PrefabInstance:
       objectReference: {fileID: 6752626637342125431}
     - target: {fileID: 3712796108771885180, guid: 96c2572f8b85a3440a89afc8ed041f22, type: 3}
       propertyPath: m_Name
-      value: Blue_AI
+      value: Blue_Test_AI
       objectReference: {fileID: 0}
     - target: {fileID: 4093016487822711494, guid: 96c2572f8b85a3440a89afc8ed041f22, type: 3}
       propertyPath: m_RootOrder
@@ -127,6 +127,10 @@ PrefabInstance:
     - target: {fileID: 6721562747944457355, guid: 96c2572f8b85a3440a89afc8ed041f22, type: 3}
       propertyPath: rangeAccuracyMin
       value: 4.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 8920991175667612693, guid: 96c2572f8b85a3440a89afc8ed041f22, type: 3}
+      propertyPath: range
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 8920991175667612693, guid: 96c2572f8b85a3440a89afc8ed041f22, type: 3}
       propertyPath: visionColor.b

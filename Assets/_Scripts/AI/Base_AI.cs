@@ -41,14 +41,14 @@ public class Base_AI : MonoBehaviour
     /// <summary>
     /// Idle -> The unit is standing around doing nothing
     /// Patrolling -> The unit is moving form one point to another
-    /// Wandering -> The unit is wandering aimlessly
     /// Investigating -> The unit is investigating an area where it detected the player 
     /// Seeking -> The unit knows where the player is and is hunting them
     /// Attacking -> The unit is within range and is attempting to harm the player
     /// Fleeing -> The unit is fleeing from combat & seeking ammo or health
-    /// Searching -> The unit is seeking ammo and health
+    /// Wandering -> The unit is wandering and looking for health/ammo
+    /// Ambushing -> The AI is traversing to its ambush position to attack the player
     /// </summary>
-    public enum AI_State { Idle, Patrolling, Wandering, Investigating, Seeking, Attacking, Fleeing, Searching, Ambushing}
+    public enum AI_State { Idle, Patrolling, Wandering, Investigating, Seeking, Attacking, Fleeing, Ambushing}
     public enum Combat_Type {Melee, Ranged}
     protected AI_State ai_State;
     protected Combat_Type combat_Type;
@@ -150,9 +150,6 @@ public class Base_AI : MonoBehaviour
                 break;
             case AI_State.Fleeing:
                 Fleeing();
-                break;
-            case AI_State.Searching:
-                Searching();
                 break;
             case AI_State.Ambushing:
                 Ambushing();
@@ -264,9 +261,7 @@ public class Base_AI : MonoBehaviour
     virtual protected void Fleeing() {
 
     }
-    virtual protected void Searching() {
 
-    }
     virtual protected void Ambushing() {
 
     }

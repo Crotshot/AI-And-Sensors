@@ -32,17 +32,17 @@ public class Red_AI : Green_AI
     }
 
     override protected void ObjectsDetected(List<Transform> visibleObjects) {
-        if (ai_State == AI_State.Ambushing)
+        if (ai_State == AI_State.Ambushing || ai_State == AI_State.Fleeing)
             return;
         base.ObjectsDetected(visibleObjects);
     }
     override protected void Damaged(Vector3 damageOrigin) {
-        if (ai_State == AI_State.Ambushing)
+        if (ai_State == AI_State.Ambushing || ai_State == AI_State.Fleeing)
             return;
         base.Damaged(damageOrigin);
     }
     override protected void SoundDetected(Vector3 calculatedOrigin) {
-        if (ai_State == AI_State.Ambushing)
+        if (ai_State == AI_State.Ambushing || ai_State == AI_State.Fleeing)
             return;
         base.SoundDetected(calculatedOrigin);
     }
@@ -98,8 +98,10 @@ public class Red_AI : Green_AI
 
         if (wantsHealth)
             packTarget = Helpers.FindClosestTransform(healthPacks, transform.position);
-        else if(wantsAmmo)
+        else if (wantsAmmo)
             packTarget = Helpers.FindClosestTransform(ammoPacks, transform.position);
+        else
+            packTarget = null;
 
         if (packTarget != null) {
             packTargetPosition = packTarget.position;

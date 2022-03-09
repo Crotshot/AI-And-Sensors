@@ -6,10 +6,11 @@ public class AmbushPlate : MonoBehaviour
 {
     [SerializeField] Red_AI ai;
 
-
     private void OnCollisionEnter(Collision collision) {
-        ai.AmbushTrigger();
-        Debug.Log("Ambush plater trigger for : " + ai.name);
-        Destroy(this);
+        if (collision.collider.TryGetComponent(out PlayerMovement pM)) {
+            ai.AmbushTrigger();
+            Destroy(this);
+            Debug.Log("Ambush plater trigger for : " + ai.name);
+        }
     }
 }

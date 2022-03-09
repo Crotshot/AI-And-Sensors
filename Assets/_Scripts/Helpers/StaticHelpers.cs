@@ -119,5 +119,13 @@ namespace Crotty.Helpers {
 
             return true;
         }
+
+        public static float RoundFloat(float f) {
+            return Mathf.Round(f * 10.0f) * 0.1f;
+        }
+
+        public static Vector3 RoundVector3(Vector3 v) {
+            return new Vector3(RoundFloat(v.x), RoundFloat(v.y), RoundFloat(v.z));
+        }
     }
 }

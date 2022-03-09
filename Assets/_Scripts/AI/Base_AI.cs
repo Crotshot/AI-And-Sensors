@@ -50,7 +50,8 @@ public class Base_AI : MonoBehaviour
     /// </summary>
     public enum AI_State { Idle, Patrolling, Wandering, Investigating, Seeking, Attacking, Fleeing, Ambushing}
     public enum Combat_Type {Melee, Ranged}
-    protected AI_State ai_State;
+    //Serialized for debugging
+    [SerializeField] protected AI_State ai_State;
     protected Combat_Type combat_Type;
     protected float timer, stunTimer, speedBeforeStun = -1f;
     protected int currentPoint;
@@ -114,12 +115,16 @@ public class Base_AI : MonoBehaviour
         dead = false;
         SetToIdle();
     }
-
+#if UNITY_EDITOR
+    [SerializeField] Vector3 debugNavAgentDestination;
+#endif
     virtual protected void Update() {
         if (Time.timeScale == 0 || dead)
             return;
-        Debug.DrawRay(transform.position,transform.forward,Color.blue);
-        if(stunTimer > 0) {
+#if UNITY_EDITOR
+        debugNavAgentDestination = navMeshAgent.destination;
+#endif
+        if (stunTimer > 0) {
             stunTimer -= Time.deltaTime;
             if(stunTimer <= 0) {
                 navMeshAgent.SetDestination(baseTargetPosition);
@@ -173,7 +178,7 @@ public class Base_AI : MonoBehaviour
 
     }
     virtual protected void Investigating() {
-        if(Helpers.Vector3Distance(transform.position, baseTargetPosition) <= 3f) {
+        if(Helpers.Vector3Distance(transform.position, baseTargetPosition) <= orderComlpletion) {
             SetToIdle();
             sightInvest = false;
             soundInvest = false;
@@ -416,7 +421,7 @@ public class Base_AI : MonoBehaviour
     #endregion
 
     //attack Trigger 
-    private void OnTriggerEnter(Collider other) {
+    virtual protected void OnTriggerEnter(Collider other) {
         if (other.tag.Equals("Player") && other.TryGetComponent(out Health hp)) {
             hp.HealthChange(-mAttackDamage);
         }

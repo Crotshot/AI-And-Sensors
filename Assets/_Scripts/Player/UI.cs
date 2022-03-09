@@ -47,6 +47,20 @@ public class UI : MonoBehaviour
         }
     }
 
+    public void CentreText(string objectName, bool enable, bool inter) {
+        if (enable) {
+            if (inter) {
+                centreText.text = "[Interact] to " + objectName;
+            }
+            else {
+                centreText.text = objectName;
+            }
+        }
+        else {
+            centreText.text = "";
+        }
+    }
+
     public void TimeText(string text) {
         timeText.text = text;
     }

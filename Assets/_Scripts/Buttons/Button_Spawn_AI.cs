@@ -8,6 +8,7 @@ public class Button_Spawn_AI : Button_Base
     [SerializeField] GameObject prefabToSpawn;
     [SerializeField] Transform[] spawnPoints;
     [SerializeField] Transform[] patrolPoints;
+    [SerializeField] bool playerFollower;//For Orange AI followers
 
     private void Start() {
         transform.parent.GetChild(2).GetComponentInChildren<TMP_Text>().text = prefabToSpawn.name;
@@ -20,7 +21,10 @@ public class Button_Spawn_AI : Button_Base
         }
         GameObject ai = Instantiate(prefabToSpawn, pickedPos.position, pickedPos.rotation);
 
-        if(patrolPoints.Length > 0) {
+        if (ai.TryGetComponent(out Orange_AI oAI)) {
+            oAI.SetPlayerFollower(playerFollower);
+        }
+        if (patrolPoints.Length > 0) {
             ai.GetComponent<Base_AI>().AssignControlPoints(patrolPoints);
         }
     }

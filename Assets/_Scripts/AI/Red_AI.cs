@@ -17,17 +17,45 @@ public class Red_AI : Green_AI
     /// </summary>
     [SerializeField] protected float minimumRange;
     float spookedTimer;
-    Vector3 ambushPosition, ambushLocation;
+    [SerializeField] Transform ambushDest, ambushLocation;
+
+    protected override void Start() {
+        if (weap == null) {
+            Debug.LogError("Red AI: " + name + " needs to have a weapon assigned before creation!");
+        }
+        ambushDest.parent = null;
+        ambushLocation.parent = null;
+        base.Start();
+    }
 
     protected override void Ambushing() {
-        
+        if (Helpers.RoundVector3(navMeshAgent.destination) != Helpers.RoundVector3(ambushDest.position)) {
+            Debug.Log(navMeshAgent.destination + "    :   " + ambushDest.position);
+            Debug.Log("(" + navMeshAgent.destination.x  + ", " + navMeshAgent.destination.y + ", " + navMeshAgent.destination.z + ")    :   (" + ambushDest.position.x + ", " + ambushDest.position.y + ", " + ambushDest.position.z + ")");
+            return;
+        }
+        if (Helpers.Vector3Distance(navMeshAgent.destination, transform.position) <= orderComlpletion) {
+            transform.LookAt(ambushLocation);
+            Debug.Log("Ready to throw grenade");
+            animator.SetTrigger("Ambush_Ready");
+        }
+        else {
+            Debug.Log("Going to ambush destination");
+        }
     }
 
     virtual protected void SetToAmbushing() {
+        ai_State = AI_State.Ambushing;
+        navMeshAgent.speed = runningSpeed;
         animator.SetTrigger("Ambush");
+        animator.SetBool("Shooting", false);
     }
 
     public void AmbushTrigger() {
+        if (ai_State == AI_State.Ambushing || animator.GetBool("Ambush_Complete")) {
+            Debug.Log("Aborting Ambush");
+            return;
+        }
         SetToAmbushing();
     }
 
@@ -50,12 +78,11 @@ public class Red_AI : Green_AI
     override protected void Fleeing() {
         sightInvest = false;
         hitInvest = false;
-        //Flee timer decreases
-        fleeTimer -= Time.deltaTime;
+
         shortFleeTimer -= Time.deltaTime;
 
         if (shortFleeTimer <= 0) {
-            SetToWandering();
+            SetToPatrolling();
         }
 
         if (Helpers.Vector3Distance(navMeshAgent.destination, transform.position) <= orderComlpletion) {//Ammo pack/health pack is pickup, will immediately go to a desired pack if it sees one
@@ -70,31 +97,40 @@ public class Red_AI : Green_AI
     }
 
     protected override void SetToInvestigating() {
-        if (ai_State == AI_State.Fleeing)
+        if (ai_State == AI_State.Fleeing || ai_State == AI_State.Ambushing)
             return;
         ai_State = AI_State.Investigating;
+        animator.SetBool("Running", false);
+        animator.SetBool("Walking", false);
         transform.LookAt(baseTargetPosition);
         navMeshAgent.SetDestination(transform.position);
     }
 
     protected override void SetToSeeking(Transform targ) {
-        if (ai_State == AI_State.Fleeing)
+        if (ai_State == AI_State.Fleeing || ai_State == AI_State.Ambushing)
             return;
         base.SetToSeeking(targ);
     }
 
     protected override void SetToAttacking() {
-        if (ai_State == AI_State.Fleeing)
+        if (ai_State == AI_State.Fleeing || ai_State == AI_State.Ambushing)
             return;
         base.SetToAttacking();
     }
 
 
     override protected bool SetToFleeing() {
+        if (ai_State == AI_State.Ambushing)
+            return false;
+
         ai_State = AI_State.Fleeing;
         animator.SetBool("Running", true);
         animator.SetBool("Walking", true);
+        animator.SetBool("Shooting",false);
         navMeshAgent.speed = runningSpeed;
+
+
+        shortFleeTimer = shortFleeTime + Random.Range(-shortFleeTimeDeviation, shortFleeTimeDeviation);
 
         if (wantsHealth)
             packTarget = Helpers.FindClosestTransform(healthPacks, transform.position);
@@ -115,18 +151,34 @@ public class Red_AI : Green_AI
     }
 
     protected override void Attacking() {
-        if (ai_State == AI_State.Fleeing)
+        if (ai_State == AI_State.Fleeing || ai_State == AI_State.Ambushing)
             return;
         base.Attacking();
     }
 
     protected override void SetToAttacking_Ranged() {
-        if (ai_State == AI_State.Fleeing)
+        if (ai_State == AI_State.Fleeing || ai_State == AI_State.Ambushing)
             return;
         if (Helpers.Vector3Distance(transform.position, baseTarget.position) <= minimumRange) {
             SetToFleeing();
             return;
         }
         base.SetToAttacking_Ranged();
+    }
+
+    virtual public void GoToLocation(Vector3 destination) {
+        navMeshAgent.SetDestination(destination);
+    }
+
+    virtual public Vector3 GetAmbushLocation() {
+        return ambushLocation.position;
+    }
+
+    virtual public Vector3 GetAmbushDestination() {
+        return ambushDest.position;
+    }
+
+    virtual public void AmbushComplete() {
+        SetToIdle();
     }
 }

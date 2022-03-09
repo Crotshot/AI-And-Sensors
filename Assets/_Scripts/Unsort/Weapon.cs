@@ -17,7 +17,7 @@ public class Weapon : MonoBehaviour
     Transform hitPoint, fakeParent;
 
     int currentMag, currentReserve;
-    private bool pickUp, canShoot,  reloading, playerHeld, aiHeld;
+    private bool pickUp, canShoot,  reloading, aiHeld;
     private float reloadTimer, shotTimer;
     Rigidbody rb;
     ParticleSystem hit;
@@ -155,7 +155,6 @@ public class Weapon : MonoBehaviour
     }
 
     public void Drop() {
-        playerHeld = false;
         pickUp = false;
         transform.GetChild(0).GetChild(0).gameObject.SetActive(false); //Disable Weapon UI
         rb.useGravity = true;

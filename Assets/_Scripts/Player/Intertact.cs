@@ -9,14 +9,15 @@ public class Intertact : MonoBehaviour
     Inputs inputs;
     Transform playerCamera;
     Weapon weapon;
-    int layer;
+    PlayerLeader pL;
+    [SerializeField] LayerMask layerMask;
     UI ui;
 
     private void Start() {
         inputs = FindObjectOfType<Inputs>();
         playerCamera = transform.GetChild(0);
-        layer = 1 << LayerMask.NameToLayer("Unit");
         ui = FindObjectOfType<UI>();
+        pL = GetComponent<PlayerLeader>();
     }
     
     Ray cameraRay;
@@ -25,9 +26,9 @@ public class Intertact : MonoBehaviour
             return;
 
         cameraRay.direction = playerCamera.forward;
-        cameraRay.origin = playerCamera.position;
-
-        if (Physics.Raycast(cameraRay, out RaycastHit hit, reach, ~layer, QueryTriggerInteraction.Ignore)) { //Pick up weapon
+        cameraRay.origin = playerCamera.position + playerCamera.forward * 0.5f;
+        Debug.DrawRay(playerCamera.position + playerCamera.forward * 0.5f, playerCamera.forward * reach, Color.green);
+        if (Physics.Raycast(cameraRay, out RaycastHit hit, reach, layerMask, QueryTriggerInteraction.Ignore)) { //Pick up weapon
            if(weapon == null) {
                 if (hit.transform.TryGetComponent(out Weapon weap)) {
                     if (!weap.GetPickUp()) {
@@ -51,13 +52,24 @@ public class Intertact : MonoBehaviour
                     button.Press();
                 }
            }
+            else if (hit.transform.TryGetComponent(out Base_AI ai)) {
+                AI_Hit(ai);
+            }
+        }
+        else if (Physics.Raycast(cameraRay, out RaycastHit hit1, 999f, layerMask, QueryTriggerInteraction.Ignore)) { //Pick up weapon
+            if(hit1.transform.TryGetComponent(out Base_AI ai)) {
+                AI_Hit(ai);
+            }
+            else {
+                ui.CentreText("", false);
+            }
         }
         else {
             ui.CentreText("", false);
         }
 
         if (weapon != null){
-            if (inputs.GetAction_1_2_Input() > 0) {
+            if (inputs.GetAction_1_Input() > 0) {
                 GetComponentInChildren<NoiseMaker>().MakeNoise(weapon.Shoot());
             }
             if (inputs.GetReloadInput() > 0) {
@@ -68,6 +80,19 @@ public class Intertact : MonoBehaviour
                 weapon = null;
                 Debug.Log(weapon);
             }
+        }
+    }
+
+    private void AI_Hit(Base_AI ai) {
+        if (ai.TryGetComponent(out Orange_AI aio)) {
+            if (!aio.isPlayerFollower()) {
+                ui.CentreText("Enemy Follower", true, false);
+                pL.SetTarget(ai.transform);
+            }
+        }
+        else {
+            ui.CentreText("Enemy", true, false);
+            pL.SetTarget(ai.transform);
         }
     }
 

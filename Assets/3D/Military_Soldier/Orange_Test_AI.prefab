@@ -29,6 +29,8 @@ MonoBehaviour:
   hitBoxLinger: 0.15
   mAttackDamage: 10
   mAttackDist: 1.4
+  ai_State: 0
+  debugNavAgentDestination: {x: 0, y: 0, z: 0}
   playerFollower: 0
   leader: {fileID: 0}
   runDistance: 5
@@ -60,8 +62,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8163414615539449267}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0, y: 0.084, z: 0}
-  m_LocalScale: {x: 0.44501, y: 0.44501, z: 0.44501}
+  m_LocalPosition: {x: -8.1490725e-10, y: 6.272728, z: 0.000000029802322}
+  m_LocalScale: {x: 1.7925794, y: 1.7925794, z: 1.7925794}
   m_Children: []
   m_Father: {fileID: 3465865829432575381}
   m_RootOrder: 3
@@ -94,7 +96,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: d2c9ec5adc527894788e9ea60f42bfc5, type: 2}
+  - {fileID: 2100000, guid: a0a76510c9fc17344a1dd3c0f013d058, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

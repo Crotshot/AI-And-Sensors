@@ -189,11 +189,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5531530542212962655, guid: 96c2572f8b85a3440a89afc8ed041f22, type: 3}
       propertyPath: anosmiaStrength
-      value: 0.179
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5531530542212962655, guid: 96c2572f8b85a3440a89afc8ed041f22, type: 3}
       propertyPath: minSmellStrength
       value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5531530542212962655, guid: 96c2572f8b85a3440a89afc8ed041f22, type: 3}
+      propertyPath: investigationTimeMinimum
+      value: 17
       objectReference: {fileID: 0}
     - target: {fileID: 7809006629344248790, guid: 96c2572f8b85a3440a89afc8ed041f22, type: 3}
       propertyPath: m_StoppingDistance

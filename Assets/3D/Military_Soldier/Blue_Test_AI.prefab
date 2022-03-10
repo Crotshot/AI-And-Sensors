@@ -174,27 +174,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5531530542212962655, guid: 96c2572f8b85a3440a89afc8ed041f22, type: 3}
       propertyPath: accuracy
-      value: 16.9
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5531530542212962655, guid: 96c2572f8b85a3440a89afc8ed041f22, type: 3}
       propertyPath: inAccuracy
-      value: 14
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5531530542212962655, guid: 96c2572f8b85a3440a89afc8ed041f22, type: 3}
+      propertyPath: travelDistance
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5531530542212962655, guid: 96c2572f8b85a3440a89afc8ed041f22, type: 3}
       propertyPath: anosmiaStrength
-      value: 0.133
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5531530542212962655, guid: 96c2572f8b85a3440a89afc8ed041f22, type: 3}
       propertyPath: maxSmellStrength
-      value: 10
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5531530542212962655, guid: 96c2572f8b85a3440a89afc8ed041f22, type: 3}
       propertyPath: minSmellStrength
-      value: 0.23
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5531530542212962655, guid: 96c2572f8b85a3440a89afc8ed041f22, type: 3}
       propertyPath: investigationTimeMinimum
-      value: 0
+      value: 14.4
       objectReference: {fileID: 0}
     - target: {fileID: 6721562747944457355, guid: 96c2572f8b85a3440a89afc8ed041f22, type: 3}
       propertyPath: range

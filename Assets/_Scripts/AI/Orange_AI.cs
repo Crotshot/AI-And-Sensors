@@ -53,9 +53,11 @@ public class Orange_AI : Base_AI
             animator.SetBool("Running", false);
             navMeshAgent.speed = walkingSpeed;
             Debug.Log("Fleeing to new position");
-            Transform p = GameObject.FindGameObjectWithTag("FleePoints").transform;
+            GameObject p = GameObject.FindGameObjectWithTag("FleePoints");
             Debug.Log(p.name);
-            Vector3 dest = p.GetChild(Random.Range(0, p.childCount)).position;
+            int c = Random.Range(0, p.transform.childCount);
+            Debug.Log(c);
+            Vector3 dest = p.transform.GetChild(c).position;
             Debug.Log(dest);
             navMeshAgent.SetDestination(dest);
         }

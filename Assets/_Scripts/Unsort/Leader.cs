@@ -74,6 +74,7 @@ public class Leader : MonoBehaviour {
         foreach (Orange_AI o in followers) {
             o.WipeLeader();
         }
+        Destroy(this);
     }
 
     virtual public void FollowerDeath(Orange_AI ai) {

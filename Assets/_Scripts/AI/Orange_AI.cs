@@ -48,17 +48,22 @@ public class Orange_AI : Base_AI
             baseTarget = null;
         }
         else {
+            ai_State = AI_State.Patrolling;
             animator.SetBool("Walking", true);
             animator.SetBool("Running", false);
             navMeshAgent.speed = walkingSpeed;
+            Debug.Log("Fleeing to new position");
             Transform p = GameObject.FindGameObjectWithTag("FleePoints").transform;
-            navMeshAgent.SetDestination(p.GetChild(Random.Range(0, p.childCount)).position);
+            Debug.Log(p.name);
+            Vector3 dest = p.GetChild(Random.Range(0, p.childCount)).position;
+            Debug.Log(dest);
+            navMeshAgent.SetDestination(dest);
         }
     }
 
     protected override void Patrolling() {//The leader will provide the positions where the Orange ai shoudl stand
-        if(leader != null) {
-            float distance = Helpers.Vector3Distance(navMeshAgent.destination, transform.position);
+        float distance = Helpers.Vector3Distance(navMeshAgent.destination, transform.position);
+        if (leader != null) {
             if (distance <= orderComlpletion) {
                 animator.SetBool("Walking", false);
                 animator.SetBool("Running", false);
@@ -76,8 +81,7 @@ public class Orange_AI : Base_AI
             }
         }
         else {
-            if (Helpers.Vector3Distance(transform.position, navMeshAgent.destination)  <= orderComlpletion) {
-
+            if (distance <= orderComlpletion) {
                 SetToPatrolling();
             }
         }
@@ -176,11 +180,16 @@ public class Orange_AI : Base_AI
     }
 
     protected override void Investigating() {
-        if (Helpers.Vector3Distance(transform.position, baseTargetPosition) <= 3f) {
+        if (leader != null) {
+            if (Helpers.Vector3Distance(transform.position, baseTargetPosition) <= 3f) {
+                SetToPatrolling();
+                sightInvest = false;
+                soundInvest = false;
+                hitInvest = false;
+            }
+        }
+        else {
             SetToPatrolling();
-            sightInvest = false;
-            soundInvest = false;
-            hitInvest = false;
         }
     }
 

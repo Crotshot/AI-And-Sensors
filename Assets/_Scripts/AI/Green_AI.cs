@@ -81,7 +81,7 @@ public class Green_AI : Base_AI {
                            marker = new GameObject("Large_Ammo_Marker");//AI can distinguish between large and small ammo packs
                         else
                             marker = new GameObject("Small_Ammo_Marker");
-                        marker.transform.position = new Vector3(pickUp.transform.position.x,0, pickUp.transform.position.z);
+                        marker.transform.position = new Vector3(pickUp.transform.position.x, pickUp.transform.position.y, pickUp.transform.position.z);
                         marker.AddComponent<MarkerOwner>().markerOwner = GetInstanceID();
                         Debug.Log("Remembering Ammo Marker");
                         ammoPacks.Add(marker.transform);
@@ -100,7 +100,7 @@ public class Green_AI : Base_AI {
                             marker = new GameObject("Large_Health_Marker");//AI can distinguish between large and small health packs
                         else
                             marker = new GameObject("Small_Health_Marker");
-                        marker.transform.position = new Vector3(pickUp.transform.position.x, 0, pickUp.transform.position.z);
+                        marker.transform.position = new Vector3(pickUp.transform.position.x, pickUp.transform.position.y, pickUp.transform.position.z);
                         marker.AddComponent<MarkerOwner>().markerOwner = GetInstanceID();
                         Debug.Log("Remembering Health Marker");
                         healthPacks.Add(marker.transform);
@@ -209,13 +209,15 @@ public class Green_AI : Base_AI {
     protected virtual bool SetToFleeing() {
         navMeshAgent.speed = runningSpeed;
         shortFleeTimer = shortFleeTime + Random.Range(-shortFleeTimeDeviation, shortFleeTimeDeviation);
-        if (fleeTimer <= 0 && weap.GetAmmoPercent() > 0) {
-            //AI has been fleeing too much so it will prevent itself from fleeing for a moment so it can take a shot or 2 at the player
-            if(groundTimer == 0) {
-                groundTimer = groundTime + Random.Range(-groundTimeDeviation, groundTimeDeviation);
-                SetToInvestigating();
+        if(weap != null) {
+            if (fleeTimer <= 0 && weap.GetAmmoPercent() > 0) {
+                //AI has been fleeing too much so it will prevent itself from fleeing for a moment so it can take a shot or 2 at the player
+                if (groundTimer == 0) {
+                    groundTimer = groundTime + Random.Range(-groundTimeDeviation, groundTimeDeviation);
+                    SetToInvestigating();
+                }
+                return false;
             }
-            return false;
         }
 
         ai_State = AI_State.Fleeing;

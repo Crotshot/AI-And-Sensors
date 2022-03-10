@@ -11932,7 +11932,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelTime: 60000
+  spawnInterval: 0
   testing: 0
+  ai: []
+  spawnPoints: []
+  patrolPoints: []
 --- !u!1001 &1049552321
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19878,14 +19882,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1557043533}
   m_LocalRotation: {x: -0, y: 0.70710653, z: -0, w: -0.7071071}
-  m_LocalPosition: {x: 37.767, y: 5.732, z: 2.9139946}
+  m_LocalPosition: {x: 35.2, y: 5.822, z: 0.26}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 24572218}
   - {fileID: 68500607}
   - {fileID: 445543}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 270, z: 0}
 --- !u!54 &1557043536
 Rigidbody:
@@ -22485,7 +22489,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7324930336207462639, guid: 9970c925b7d7147438078ca470526cb4, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 25.36
+      value: 21.89
       objectReference: {fileID: 0}
     - target: {fileID: 7324930336207462639, guid: 9970c925b7d7147438078ca470526cb4, type: 3}
       propertyPath: m_LocalPosition.y

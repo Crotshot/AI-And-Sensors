@@ -28,11 +28,12 @@ public class LevelCompletion : MonoBehaviour
     {
         if (over)
             return;
+        if(spawnInterval != 0)
+            spawnTimer -= Time.deltaTime;
 
-        spawnTimer -= Time.deltaTime;
         levelTime -= Time.deltaTime;
 
-        if(spawnTimer <= 0) {
+        if(spawnTimer <= 0 && spawnInterval != 0) {
             spawnTimer = spawnInterval;
             GameObject a = Instantiate(ai[Random.Range(0, ai.Length)], transform.position, Quaternion.identity);
             a.GetComponent<Base_AI>().AssignControlPoints(patrolPoints);

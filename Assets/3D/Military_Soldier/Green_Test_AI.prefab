@@ -37,8 +37,8 @@ MonoBehaviour:
   packLayer:
     serializedVersion: 2
     m_Bits: 128
-  lowHealthThreshold: 0.4
-  lowAmmoThreshold: 0.2
+  lowHealthThreshold: 0.5
+  lowAmmoThreshold: 0.5
   maxFleeTime: 30
   maxFleeTimeDeviation: 10
   shortFleeTime: 10
@@ -57,7 +57,6 @@ GameObject:
   - component: {fileID: 4374038503261181108}
   - component: {fileID: 5533642971893171908}
   - component: {fileID: 4914548524804055518}
-  - component: {fileID: 6563493299368110689}
   m_Layer: 3
   m_Name: Sphere
   m_TagString: Untagged
@@ -72,12 +71,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5076617184619298995}
-  m_LocalRotation: {x: -0.0000000037252899, y: -0, z: 3.6266098e-11, w: 1}
-  m_LocalPosition: {x: 0, y: 3.3549838, z: 0}
+  m_LocalRotation: {x: -0.0000000012545381, y: -1.8735588e-10, z: 5.827627e-11, w: 1}
+  m_LocalPosition: {x: -0.00012127072, y: 4.8156457, z: -0.032224793}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_Children: []
-  m_Father: {fileID: 5746316551018102257}
-  m_RootOrder: 1
+  m_Father: {fileID: 1322308691182224904}
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &5533642971893171908
 MeshFilter:
@@ -129,19 +128,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &6563493299368110689
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5076617184619298995}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &3068244857063038158
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -230,11 +216,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4093016487822711494, guid: 96c2572f8b85a3440a89afc8ed041f22, type: 3}
   m_PrefabInstance: {fileID: 3068244857063038158}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &5746316551018102257 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 7290091970394382655, guid: 96c2572f8b85a3440a89afc8ed041f22, type: 3}
-  m_PrefabInstance: {fileID: 3068244857063038158}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7329673314643332334 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5705114578456711200, guid: 96c2572f8b85a3440a89afc8ed041f22, type: 3}
@@ -250,6 +231,18 @@ PrefabInstance:
     - target: {fileID: 1105121646, guid: 68c4b43e4f09edb41a8e33abfd6c4d51, type: 3}
       propertyPath: damage
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 1105121646, guid: 68c4b43e4f09edb41a8e33abfd6c4d51, type: 3}
+      propertyPath: magSize
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1105121646, guid: 68c4b43e4f09edb41a8e33abfd6c4d51, type: 3}
+      propertyPath: reserveSize
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1105121646, guid: 68c4b43e4f09edb41a8e33abfd6c4d51, type: 3}
+      propertyPath: startingReserve
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4861934677290537700, guid: 68c4b43e4f09edb41a8e33abfd6c4d51, type: 3}
       propertyPath: m_Name

@@ -78,5 +78,6 @@ public class Leader : MonoBehaviour {
 
     virtual public void FollowerDeath(Orange_AI ai) {
         followers.Remove(ai);
+        GetComponent<Purple_AI>().Flee();
     }
 }
